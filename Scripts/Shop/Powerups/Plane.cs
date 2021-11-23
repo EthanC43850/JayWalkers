@@ -13,7 +13,7 @@ public class Plane : Powerup
         Debug.Log("First Plane constructor called");
     }*/
 
-    public Plane(int newLevel, int newCost, Slider slider, Image sliderFill, Text levelTxt, Text costTxt) : base(newLevel, newCost, slider, sliderFill, levelTxt, costTxt)
+    public Plane(int newLevel, int newCost, Slider slider, Text levelTxt, Text costTxt) : base(newLevel, newCost, slider, levelTxt, costTxt)
     {
         Debug.Log("2nd Plane Constructor called");
     }
