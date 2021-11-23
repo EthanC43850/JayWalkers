@@ -310,9 +310,9 @@ public class TitleScreen : MonoBehaviour
 
         //Update the shop UI
         shopUIScript.playerScript = playerScript;
-        Balloon balloonPowerup = new Balloon(data.balloonUpgradeLevel, 1000 * data.balloonUpgradeLevel, shopUIScript.balloonSlider, shopUIScript.balloonSliderFill, shopUIScript.balloonLevelTxt, shopUIScript.balloonCostTxt);
-        Tank tankPowerup = new Tank(data.tankUpgradeLevel, 1250 * data.tankUpgradeLevel, shopUIScript.tankSlider, shopUIScript.tankSliderFill, shopUIScript.tankLevelTxt, shopUIScript.tankCostTxt);
-        Plane planePowerup = new Plane(data.planeUpgradeLevel, 1500 * data.tankUpgradeLevel, shopUIScript.planeSlider, shopUIScript.planeSliderFill, shopUIScript.planeLevelText, shopUIScript.planeCostTxt);
+        Balloon balloonPowerup = new Balloon(data.balloonUpgradeLevel, 1000 * data.balloonUpgradeLevel, shopUIScript.balloonSlider, shopUIScript.balloonLevelTxt, shopUIScript.balloonCostTxt);
+        Tank tankPowerup = new Tank(data.tankUpgradeLevel, 1250 * data.tankUpgradeLevel, shopUIScript.tankSlider, shopUIScript.tankLevelTxt, shopUIScript.tankCostTxt);
+        Plane planePowerup = new Plane(data.planeUpgradeLevel, 1500 * data.tankUpgradeLevel, shopUIScript.planeSlider, shopUIScript.planeLevelText, shopUIScript.planeCostTxt);
 
 
 
