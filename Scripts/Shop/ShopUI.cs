@@ -51,13 +51,16 @@ public class ShopUI : MonoBehaviour
         if (playerScript.balloonUpgradeLevel < 10)
         {
             playerScript.balloonUpgradeLevel++;
-            Balloon balloonPowerup = new Balloon(playerScript.balloonUpgradeLevel, 1250 * playerScript.balloonUpgradeLevel, balloonSlider, balloonSliderFill, balloonLevelTxt, balloonCostTxt);
+            Balloon balloonPowerup = new Balloon(playerScript.balloonUpgradeLevel, 1250 * playerScript.balloonUpgradeLevel, balloonSlider, balloonLevelTxt, balloonCostTxt);
             playerScript.SavePlayer();
         }
         else
         {
             balloonCostBox.SetActive(false);
             balloonMax.SetActive(true);
+            balloonSlider.value = balloonSlider.maxValue;
+            balloonSliderFill.color = Color.green;
+            
         }
     }
 
@@ -66,13 +69,16 @@ public class ShopUI : MonoBehaviour
         if (playerScript.tankUpgradeLevel < 10)
         {
             playerScript.tankUpgradeLevel++;
-            Tank tankPowerup = new Tank(playerScript.tankUpgradeLevel, 1250 * playerScript.tankUpgradeLevel, tankSlider, tankSliderFill, tankLevelTxt, tankCostTxt);
+            Tank tankPowerup = new Tank(playerScript.tankUpgradeLevel, 1250 * playerScript.tankUpgradeLevel, tankSlider, tankLevelTxt, tankCostTxt);
             playerScript.SavePlayer();
         }
         else
         {
             tankCostBox.SetActive(false);
             tankMax.SetActive(true);
+            tankSlider.value = tankSlider.maxValue;
+            tankSliderFill.color = Color.green;
+            
         }
     }
 
@@ -82,13 +88,15 @@ public class ShopUI : MonoBehaviour
         if (playerScript.planeUpgradeLevel < 10)
         {
             playerScript.planeUpgradeLevel++;
-            Plane planePowerup = new Plane(playerScript.planeUpgradeLevel, 1250 * playerScript.planeUpgradeLevel, planeSlider, planeSliderFill, planeLevelText, planeCostTxt);
+            Plane planePowerup = new Plane(playerScript.planeUpgradeLevel, 1250 * playerScript.planeUpgradeLevel, planeSlider, planeLevelText, planeCostTxt);
             playerScript.SavePlayer();
         }
         else
         {
             planeCostBox.SetActive(false);
             planeMax.SetActive(true);
+            planeSlider.value = planeSlider.maxValue;
+            planeSliderFill.color = Color.green;
         }
     }
 
