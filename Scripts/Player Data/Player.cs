@@ -46,6 +46,9 @@ public class Player : MonoBehaviour
 
     public void Start()
     {
+        balloonUpgradeLevel = 1;
+        tankUpgradeLevel = 1;
+        planeUpgradeLevel = 1;
         gameManagerScript = GameObject.Find("Game Manager").GetComponent<GameManager>();
         titleScreenScript = GameObject.Find("TitleScreen").GetComponent<TitleScreen>();
     }

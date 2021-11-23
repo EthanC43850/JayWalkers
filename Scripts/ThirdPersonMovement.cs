@@ -121,7 +121,6 @@ public class ThirdPersonMovement : MonoBehaviour
                 gameManagerScript.dialogueOpen = true;  //Makes sure shop only opens when dialogue is over
                 gameManagerScript.shopVirtualCam.Priority = 25;
                 gameManagerScript.shopDialogueTrigger.TriggerDialogue();
-                //hit.collider.GetComponent<PlayableDirector>().Play();     //If I want to play a timeline before dialogue
 
                 //Disable Normal Player Controls
                 freeLookScript.SetActive(false);
@@ -133,8 +132,8 @@ public class ThirdPersonMovement : MonoBehaviour
 
             if (gameManagerScript.dialogueOpen == false && gameManagerScript.shopOpen == true) //Makes sure shop only opens when dialogue is over
             {
-                shopUI.SetActive(true);
 
+                shopUI.SetActive(true);
                 gameManagerScript.playerInfoUI.GetComponent<Animator>().SetBool("Open_b", false);
             }
 

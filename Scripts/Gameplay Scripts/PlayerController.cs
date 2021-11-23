@@ -9,7 +9,7 @@ public class PlayerController : MonoBehaviour
     private MainCamera mainCameraScript;
     private PlatformSpawner platformSpawnerScript;
     private GameManager gameManagerScript;
-    public Player playerDataScript;
+    public Player playerScript;
 
 
 
@@ -580,8 +580,8 @@ public class PlayerController : MonoBehaviour
             yellowFireWork.Play();
             Destroy(other.gameObject);
             gameManagerScript.UpdateCashCount(1);
-            playerDataScript.currentTotalCoinCount++;
-            playerDataScript.networth++;
+            playerScript.currentTotalCoinCount++;
+            playerScript.networth++;
 
         }
 

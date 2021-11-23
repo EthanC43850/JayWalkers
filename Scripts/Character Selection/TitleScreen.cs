@@ -19,6 +19,8 @@ public class TitleScreen : MonoBehaviour
     [HideInInspector]
     public CinemachineFreeLook thirdPersonCameraScript;
 
+    public ShopUI shopUIScript;
+
     public Highlight highLightScript;
 
     public Player playerScript;
@@ -232,7 +234,8 @@ public class TitleScreen : MonoBehaviour
         //Create and assign new player data
         characterList[characterNumber].AddComponent<Player>();
         playerScript = characterList[characterNumber].GetComponent<Player>();
-        playerControllerScript.playerDataScript = playerScript;
+        playerControllerScript.playerScript = playerScript;
+        shopUIScript.playerScript = playerScript;
         playerScript.playerName = nameInput;
         playerScript.characterNumber = characterNumber;
         playerScript.characterType = characterTypeUI.text;     //characterClassCardUI is initialized when a character is clicked on
@@ -302,7 +305,16 @@ public class TitleScreen : MonoBehaviour
         titleScreenPlayableDirector.Stop();
         count = 7;  //Increment count to skip player select
 
-        playerControllerScript.playerDataScript = playerScript;
+        //Give the player controller and shop scripts the data stored inside the player
+        playerControllerScript.playerScript = playerScript;
+
+        //Update the shop UI
+        shopUIScript.playerScript = playerScript;
+        Balloon balloonPowerup = new Balloon(data.balloonUpgradeLevel, 1000 * data.balloonUpgradeLevel, shopUIScript.balloonSlider, shopUIScript.balloonSliderFill, shopUIScript.balloonLevelTxt, shopUIScript.balloonCostTxt);
+        Tank tankPowerup = new Tank(data.tankUpgradeLevel, 1250 * data.tankUpgradeLevel, shopUIScript.tankSlider, shopUIScript.tankSliderFill, shopUIScript.tankLevelTxt, shopUIScript.tankCostTxt);
+        Plane planePowerup = new Plane(data.planeUpgradeLevel, 1500 * data.tankUpgradeLevel, shopUIScript.planeSlider, shopUIScript.planeSliderFill, shopUIScript.planeLevelText, shopUIScript.planeCostTxt);
+
+
 
 
         saveBtn.onClick.AddListener(playerScript.SavePlayer);

@@ -12,10 +12,11 @@ public class PlayerData
     public int characterNumber;
     public float[] position;
     public int level;
-    public int networth;
     public int jailTime;
-
+    public int networth;
     public int currentTotalCoinCount;
+
+
     //Capable of buying sodas or planes before a run
     public int currentTotalSodaCount;
     public int currentTotalPlaneCount;
@@ -37,10 +38,17 @@ public class PlayerData
         characterType = player.characterType;
         characterNumber = player.characterNumber;
         level = player.level;
-        currentTotalCoinCount = player.currentTotalCoinCount;
-
         networth = player.networth;
         jailTime = player.jailTime;
+
+        currentTotalCoinCount = player.currentTotalCoinCount;
+        balloonUpgradeLevel = player.balloonUpgradeLevel;
+        tankUpgradeLevel = player.tankUpgradeLevel;
+        planeUpgradeLevel = player.planeUpgradeLevel;
+        enduranceUpgradeLevel = player.enduranceUpgradeLevel;
+
+
+        
 
         position = new float[3];
         position[0] = player.transform.position.x;
