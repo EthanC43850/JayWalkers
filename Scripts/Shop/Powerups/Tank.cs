@@ -12,7 +12,7 @@ public class Tank : Powerup
         Debug.Log("First tank constructor called");
     }*/
 
-    public Tank(int newLevel, int newCost, Slider slider, Image sliderFill, Text levelTxt, Text costTxt) : base(newLevel, newCost, slider, sliderFill, levelTxt, costTxt){
+    public Tank(int newLevel, int newCost, Slider slider, Text levelTxt, Text costTxt) : base(newLevel, newCost, slider, levelTxt, costTxt){
         Debug.Log("2nd Tank Constructor called");
     }
 
