@@ -46,9 +46,7 @@ public class Player : MonoBehaviour
 
     public void Start()
     {
-        balloonUpgradeLevel = 1;
-        tankUpgradeLevel = 1;
-        planeUpgradeLevel = 1;
+
         gameManagerScript = GameObject.Find("Game Manager").GetComponent<GameManager>();
         titleScreenScript = GameObject.Find("TitleScreen").GetComponent<TitleScreen>();
     }
@@ -73,6 +71,12 @@ public class Player : MonoBehaviour
         currentTotalCoinCount = data.currentTotalCoinCount;
         networth = data.networth;
         jailTime = data.jailTime;
+
+        currentTotalCoinCount = data.currentTotalCoinCount;
+        balloonUpgradeLevel = data.balloonUpgradeLevel;
+        tankUpgradeLevel = data.tankUpgradeLevel;
+        planeUpgradeLevel = data.planeUpgradeLevel;
+        enduranceUpgradeLevel = data.enduranceUpgradeLevel;
 
         //Get the character from the titleScreenScript and update the UI
         Debug.Log("Character number to load is " + characterNumber);

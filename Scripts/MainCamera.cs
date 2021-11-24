@@ -25,7 +25,7 @@ public class MainCamera : MonoBehaviour
     public PlayerController playerControllerScript;
 
     private bool elevation;
-    private bool decline;
+    //private bool decline;
     private bool slowCameraTransition;
     //private float clock = 0.0f;
 
@@ -112,7 +112,7 @@ public class MainCamera : MonoBehaviour
         }
         else if (other.gameObject.CompareTag("DeclinePlatform"))
         {
-            decline = true;
+            //decline = true;
             transform.rotation = Quaternion.Slerp(transform.rotation, cameraRotateDown, Time.deltaTime * cameraRotateSpeed);
 
 
@@ -126,7 +126,7 @@ public class MainCamera : MonoBehaviour
     private void OnTriggerExit(Collider other) //Detects when player is no longer on an elevated slope
     {
         elevation = false;
-        decline = false;
+        //decline = false;
         cameraOffset = new Vector3(19.3f, 13.8f, 0.0f);
     }
 

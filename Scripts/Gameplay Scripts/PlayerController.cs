@@ -32,11 +32,12 @@ public class PlayerController : MonoBehaviour
     public int laneNumber = 1;
     public float changeLaneSpeed;
 
+    /* Attempted to make a Rb controller that can smoothly step over bumps
     [Header("Player Step Climb:")]
     [SerializeField] GameObject stepRayUpper;
     [SerializeField] GameObject stepRayLower;
     [SerializeField] float stepHeight = 0.3f;
-    [SerializeField] float stepSmooth = 2f; //The higher the step smooth is, the higher the character will jump up. The lower the step smooth, the smoother the transition
+    [SerializeField] float stepSmooth = 2f; //The higher the step smooth is, the higher the character will jump up. The lower the step smooth, the smoother the transition*/
 
 
 

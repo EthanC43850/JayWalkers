@@ -78,6 +78,7 @@ public class TitleScreen : MonoBehaviour
     #endregion
 
     public PlayableDirector titleScreenPlayableDirector;
+    public GameObject cutSceneTools;
 
     public bool characterSelectActive;
     public bool playerSelected;
@@ -192,11 +193,11 @@ public class TitleScreen : MonoBehaviour
 
 
 
-    public void SelectCharacter()
+    /*public void SelectCharacter()
     {
         characterDescriptionBoxAnimator.SetBool("Is_Open", false);
         count++;
-    }
+    }*/
 
 
     //Give control to the character that the player selected
@@ -239,6 +240,10 @@ public class TitleScreen : MonoBehaviour
         playerScript.playerName = nameInput;
         playerScript.characterNumber = characterNumber;
         playerScript.characterType = characterTypeUI.text;     //characterClassCardUI is initialized when a character is clicked on
+        //Initialize levels to 1
+        playerScript.balloonUpgradeLevel = 1;
+        playerScript.tankUpgradeLevel = 1;
+        playerScript.planeUpgradeLevel = 1;
 
         saveBtn.onClick.AddListener(playerScript.SavePlayer);   //Saving will be turned on
 
@@ -270,6 +275,8 @@ public class TitleScreen : MonoBehaviour
 
     public void TitleScreenLoadData()
     {
+        cutSceneTools.SetActive(false);
+
         //Load previously saved data
         PlayerData data = SaveSystem.LoadPlayer();
         currentCharacterNumber = data.characterNumber;
@@ -308,17 +315,48 @@ public class TitleScreen : MonoBehaviour
         //Give the player controller and shop scripts the data stored inside the player
         playerControllerScript.playerScript = playerScript;
 
-        //Update the shop UI
+
+
+        //Update the shop UI after loading player because I can't move shopUIScript into the player load script (Unless I pass a parameter)
         shopUIScript.playerScript = playerScript;
         Balloon balloonPowerup = new Balloon(data.balloonUpgradeLevel, 1000 * data.balloonUpgradeLevel, shopUIScript.balloonSlider, shopUIScript.balloonLevelTxt, shopUIScript.balloonCostTxt);
         Tank tankPowerup = new Tank(data.tankUpgradeLevel, 1250 * data.tankUpgradeLevel, shopUIScript.tankSlider, shopUIScript.tankLevelTxt, shopUIScript.tankCostTxt);
         Plane planePowerup = new Plane(data.planeUpgradeLevel, 1500 * data.tankUpgradeLevel, shopUIScript.planeSlider, shopUIScript.planeLevelText, shopUIScript.planeCostTxt);
 
+        if (data.balloonUpgradeLevel == 10)
+        {
+            shopUIScript.balloonCostBox.SetActive(false);
+            shopUIScript.balloonMax.SetActive(true);
+            shopUIScript.balloonLevelTxt.text = data.balloonUpgradeLevel + "";
+            shopUIScript.balloonSlider.value = shopUIScript.balloonSlider.maxValue;
+            shopUIScript.balloonSliderFill.color = Color.green;
+        }
 
+        if (data.tankUpgradeLevel == 10)
+        {
+            shopUIScript.tankCostBox.SetActive(false);
+            shopUIScript.tankMax.SetActive(true);
+            shopUIScript.tankLevelTxt.text = data.tankUpgradeLevel + "";
+            shopUIScript.tankSlider.value = shopUIScript.tankSlider.maxValue;
+            shopUIScript.tankSliderFill.color = Color.green;
+
+        }
+
+        if (data.planeUpgradeLevel == 10)
+        {
+            shopUIScript.planeCostBox.SetActive(false);
+            shopUIScript.planeMax.SetActive(true);
+            shopUIScript.planeLevelText.text = data.planeUpgradeLevel + "";
+            shopUIScript.planeSlider.value = shopUIScript.planeSlider.maxValue;
+            shopUIScript.planeSliderFill.color = Color.green;
+        }
 
 
         saveBtn.onClick.AddListener(playerScript.SavePlayer);
+        
         playerScript.LoadPlayer();
+
+        
 
 
         gameManagerScript.UpdatePlayerUI(playerScript);

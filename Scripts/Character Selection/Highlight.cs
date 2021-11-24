@@ -83,6 +83,7 @@ public class Highlight : MonoBehaviour
     {
         titleScreenScript.characterDescriptionBoxAnimator.SetBool("Is_Open", false);
         titleScreenScript.playerCardUI.SetActive(true);
+        titleScreenScript.playerCardButtons.SetActive(true);
     }
 
     public void ExitCharacter()
