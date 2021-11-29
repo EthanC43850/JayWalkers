@@ -28,6 +28,13 @@ public class ThirdPersonMovement : MonoBehaviour
     public GameObject shopUI;
     public DialogueTrigger shopDialogueTrigger;
 
+    [Header("Firestation")]
+    public LayerMask fireStationEntrance;
+    public LayerMask fireStationExit;
+
+    [SerializeField] Transform downStairs;
+    [SerializeField] Transform upstairs;
+
 
     [Header("Player HUD")]
 
@@ -137,7 +144,7 @@ public class ThirdPersonMovement : MonoBehaviour
                 gameManagerScript.playerInfoUI.GetComponent<Animator>().SetBool("Open_b", false);
             }
 
-            if(gameManagerScript.dialogueOpen == false && gameManagerScript.shopOpen == false)
+            if(gameManagerScript.dialogueOpen == false && gameManagerScript.shopOpen == false) //Close shop
             {
                 shopUI.SetActive(false);
                 freeLookScript.SetActive(true);
@@ -148,10 +155,28 @@ public class ThirdPersonMovement : MonoBehaviour
                 gameManagerScript.shopVirtualCam.Priority = 5;
             }
         }
+        else if(Physics.Raycast(lookPos.transform.position, transform.TransformDirection(Vector3.forward), out hit, 1.5f, fireStationEntrance))
+        {
+            interactUI.SetActive(true);
+            if (Input.GetKeyDown(KeyCode.E))
+            {
+                gameObject.transform.position = upstairs.transform.position;
+            }
+        }
+        else if(Physics.Raycast(lookPos.transform.position, transform.TransformDirection(Vector3.forward), out hit, 1.5f, fireStationExit))
+        {
+            interactUI.SetActive(true);
+            if (Input.GetKeyDown(KeyCode.E))
+            {
+                gameObject.transform.position = downStairs.transform.position;
+            }
+        }
         else
         {
             interactUI.SetActive(false);
         }
+
+
 
 
     }
