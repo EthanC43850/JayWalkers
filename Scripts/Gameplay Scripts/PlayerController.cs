@@ -573,6 +573,7 @@ public class PlayerController : MonoBehaviour
             greenFireWork.Play();
             Destroy(other.gameObject);
             gameManagerScript.UpdateDrinkCount(1);
+            playerScript.currentTotalSodaCount++;
 
 
         }

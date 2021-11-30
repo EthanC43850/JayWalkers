@@ -6,6 +6,7 @@ using UnityEngine.UI;
 public class ShopUI : MonoBehaviour
 {
     public Player playerScript;
+    public GameManager gameManagerScript;
 
     [Header("Balloon Card UI")]
     public Slider balloonSlider;
@@ -48,10 +49,12 @@ public class ShopUI : MonoBehaviour
 
     public void UpgradeBalloonBtn()
     {
-        if (playerScript.balloonUpgradeLevel < 10)
+        if (playerScript.balloonUpgradeLevel < 10 && playerScript.currentTotalCoinCount > 250 * playerScript.balloonUpgradeLevel)
         {
             playerScript.balloonUpgradeLevel++;
-            Balloon balloonPowerup = new Balloon(playerScript.balloonUpgradeLevel, 1250 * playerScript.balloonUpgradeLevel, balloonSlider, balloonLevelTxt, balloonCostTxt);
+            Balloon balloonPowerup = new Balloon(playerScript.balloonUpgradeLevel, 250 * playerScript.balloonUpgradeLevel, balloonSlider, balloonLevelTxt, balloonCostTxt);
+            playerScript.currentTotalCoinCount -= 250 * playerScript.balloonUpgradeLevel;
+            gameManagerScript.UpdatePlayerUI(playerScript);
             playerScript.SavePlayer();
         }
         
@@ -68,10 +71,12 @@ public class ShopUI : MonoBehaviour
 
     public void UpgradeTankBtn()
     {
-        if (playerScript.tankUpgradeLevel < 10)
+        if (playerScript.tankUpgradeLevel < 10 && playerScript.currentTotalCoinCount > 250 * playerScript.tankUpgradeLevel)
         {
             playerScript.tankUpgradeLevel++;
-            Tank tankPowerup = new Tank(playerScript.tankUpgradeLevel, 1250 * playerScript.tankUpgradeLevel, tankSlider, tankLevelTxt, tankCostTxt);
+            Tank tankPowerup = new Tank(playerScript.tankUpgradeLevel, 250 * playerScript.tankUpgradeLevel, tankSlider, tankLevelTxt, tankCostTxt);
+            playerScript.currentTotalCoinCount -= 250 * playerScript.tankUpgradeLevel;
+            gameManagerScript.UpdatePlayerUI(playerScript);
             playerScript.SavePlayer();
         }
         
@@ -89,10 +94,12 @@ public class ShopUI : MonoBehaviour
 
     public void UpgradePlaneBtn()
     {
-        if (playerScript.planeUpgradeLevel < 10)
+        if (playerScript.planeUpgradeLevel < 10 && playerScript.currentTotalCoinCount > 250 * playerScript.planeUpgradeLevel)
         {
             playerScript.planeUpgradeLevel++;
-            Plane planePowerup = new Plane(playerScript.planeUpgradeLevel, 1250 * playerScript.planeUpgradeLevel, planeSlider, planeLevelText, planeCostTxt);
+            Plane planePowerup = new Plane(playerScript.planeUpgradeLevel, 250 * playerScript.planeUpgradeLevel, planeSlider, planeLevelText, planeCostTxt);
+            playerScript.currentTotalCoinCount -= 250 * playerScript.planeUpgradeLevel;
+            gameManagerScript.UpdatePlayerUI(playerScript);
             playerScript.SavePlayer();
         }
         
@@ -104,6 +111,17 @@ public class ShopUI : MonoBehaviour
             planeSlider.value = planeSlider.maxValue;
             planeSliderFill.color = Color.green;
         }
+    }
+
+    public void Cheat()
+    {
+        playerScript.currentTotalCoinCount = 999999;
+        playerScript.currentTotalSodaCount = 9999;
+        gameManagerScript.UpdatePlayerUI(playerScript);
+
+
+
+
     }
 
 

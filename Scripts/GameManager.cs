@@ -26,9 +26,13 @@ public class GameManager : MonoBehaviour
     public bool shopOpen;
     public CinemachineVirtualCamera shopVirtualCam;
     public DialogueTrigger shopDialogueTrigger;
+
     public GameObject playerInfoUI;
     public Text levelUI;
     public Text currentCashAmtUI;
+    public Text currentSodaAmtUI;
+    public Text currentCashAmtShopUI;
+    public Text currentSodaAmtShopUI;
 
 
     public GameObject thirdPersonCamera;
@@ -60,7 +64,7 @@ public class GameManager : MonoBehaviour
     private PlatformSpawner platformSpawnerScript;
     public PlayerController playerControllerScript;
     public MainCamera mainCameraScript;
-    public TitleScreen titleScreenScript; //Only used to update player UI when "Return to town" is clicked.
+    public TitleScreen titleScreenScript; //Only used to update player UI when "Return to town" is clicked, and add total jailtime
     
 
     [Header("Player Card UI")]
@@ -104,9 +108,12 @@ public class GameManager : MonoBehaviour
             gameStart = true;
             thirdPersonCamera.SetActive(false);
 
+            titleScreenScript.playerScript.jailTime++;
+
+
         }
 
-        
+
 
         if (gameStart == true)
         {
@@ -147,9 +154,11 @@ public class GameManager : MonoBehaviour
         UpdateCashCount(0);
         totalDrinks = 0;
         UpdateDrinkCount(0);
-        
 
-        if(insideTown != true)
+        titleScreenScript.playerScript.jailTime++;
+
+
+        if (insideTown != true)
         {
             mainCameraScript.transform.rotation = Quaternion.Slerp(mainCameraScript.transform.rotation, mainCameraScript.defaultCameraRotation, Time.deltaTime * mainCameraScript.cameraRotateSpeed);
             playerControllerScript.transform.rotation = Quaternion.Euler(0f, -90f, 0f);                //Make sure that plane power up did not tilt the player
@@ -259,14 +268,25 @@ public class GameManager : MonoBehaviour
     //Update Open-world Player UI
     public void UpdatePlayerUI(Player playerScript)
     {
-        
-        
+        characterLevelCardUI.text = playerScript.level.ToString();
+        characterJailTimeCardUI.text = playerScript.jailTime.ToString();
+
+        //Player UI
+        levelUI.text = playerScript.level.ToString();
+        currentCashAmtUI.text = playerScript.currentTotalCoinCount.ToString();
+        currentSodaAmtUI.text = playerScript.currentTotalSodaCount.ToString();
+
+        //Shop UI
+        currentCashAmtShopUI.text = playerScript.currentTotalCoinCount.ToString();
+        currentSodaAmtShopUI.text = playerScript.currentTotalSodaCount.ToString();
+
+        //State ID UI
+        characterTypeCardUI.text = playerScript.characterType;
+        characterNetworthCardUI.text = "$ " + playerScript.networth.ToString();
         characterTypeCardUI.text = playerScript.characterType;
         characterLevelCardUI.text = playerScript.level.ToString();
         characterJailTimeCardUI.text = playerScript.jailTime.ToString();
 
-        levelUI.text = playerScript.level.ToString();
-        currentCashAmtUI.text = "$ " + playerScript.currentTotalCoinCount.ToString();
 
 
     }
