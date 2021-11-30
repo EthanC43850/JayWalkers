@@ -78,7 +78,9 @@ public class PlayerController : MonoBehaviour
     public ParticleSystem greenFireWork;
     public ParticleSystem powerupSmoke;
     public ParticleSystem deathSmoke;
+    public ParticleSystem runParticles;
     public GameObject playerBalloons;
+
 
     //public bool grenadesPowerup;
 
@@ -103,6 +105,7 @@ public class PlayerController : MonoBehaviour
     [Header("Sound FX:")]
     public AudioSource audioSource;
     public AudioClip jumpSound;
+    public AudioClip slideSound;
     public AudioClip deathSound;
     //public AudioClip coinSound;
     //public AudioClip Soda;
@@ -488,6 +491,8 @@ public class PlayerController : MonoBehaviour
         playerAnim.SetBool("Slide_b", true); //drop down animation begin
         playerAnim.SetBool("Jump_b", false);
         playerRb.AddForce(Vector3.down * jumpForce, ForceMode.Impulse);
+        audioSource.PlayOneShot(slideSound, 1.0f);
+
 
         yield return new WaitForSeconds(1.0f);    //length of slide
         playerAnim.SetBool("Slide_b", false); 

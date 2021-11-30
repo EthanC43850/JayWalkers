@@ -5,6 +5,7 @@ using UnityEngine.Playables;
 using Cinemachine;
 
 
+
 public class ThirdPersonMovement : MonoBehaviour
 {
     public GameObject freeLookScript;
@@ -14,7 +15,6 @@ public class ThirdPersonMovement : MonoBehaviour
 
 
     public GameObject interactUI;
-    public PlayableDirector playableDirector;
 
     [Header("Player Controls")]
     public CharacterController controller;
@@ -31,6 +31,10 @@ public class ThirdPersonMovement : MonoBehaviour
     [Header("Firestation")]
     public LayerMask fireStationEntrance;
     public LayerMask fireStationExit;
+    public LayerMask brokenPlane;
+    public GameObject planeCrashTimeline;
+    public ParticleSystem planeSmokeFx;
+    private bool playedBefore = false;
 
     [SerializeField] Transform downStairs;
     [SerializeField] Transform upstairs;
@@ -171,6 +175,14 @@ public class ThirdPersonMovement : MonoBehaviour
                 gameObject.transform.position = downStairs.transform.position;
             }
         }
+        else if(Physics.Raycast(lookPos.transform.position, transform.TransformDirection(Vector3.forward), out hit, 1.5f, brokenPlane))
+        {
+            interactUI.SetActive(true);
+            if (Input.GetKeyDown(KeyCode.E))
+            {
+                planeSmokeFx.Stop();
+            }
+        }
         else
         {
             interactUI.SetActive(false);
@@ -181,7 +193,16 @@ public class ThirdPersonMovement : MonoBehaviour
 
     }
 
- 
+    private void OnTriggerEnter(Collider other)
+    {
+        if (other.gameObject.CompareTag("PlaneTimelineTrigger") && playedBefore == false)
+        {
+            planeCrashTimeline.SetActive(true);
+            playedBefore = true;
+        }
+    }
+
+
 
 
 

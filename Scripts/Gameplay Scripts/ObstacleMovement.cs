@@ -12,18 +12,17 @@ public class ObstacleMovement : MonoBehaviour
     
     RaycastHit hit;
 
-    private GameManager gameManagerScript;
+    public GameManager gameManagerScript;
+
     public GameObject[] wheelList;
     public Transform[] lanes;  //Do not manually assign lanes in the inspector. This program automatically finds the transforms.
 
 
     [SerializeField] LayerMask vehicleMask;
-    PlayerController playerControllerScript;
 
     void Start()
     {
         //Debug.Log("Game started");
-        playerControllerScript = GameObject.Find("Player").GetComponent<PlayerController>();
         gameManagerScript = GameObject.Find("Game Manager").GetComponent<GameManager>();
         wheelSpinSpeed = Random.Range(300.0f, 800.0f);
         for(int i = 0; i < 4; i++)
@@ -38,13 +37,6 @@ public class ObstacleMovement : MonoBehaviour
 
     void Update()
     {
-        if(transform.position.y < playerControllerScript.gameObject.transform.position.y - 60)
-        {
-            Destroy(gameObject);
-        }
-
-
-
         transform.Translate(Vector3.forward * Time.deltaTime * speed);
         transform.position = new Vector3(transform.position.x, transform.position.y, lanes[laneNumber].transform.position.z); //keeps vehicle in lane number
         WheelSpin();
@@ -84,6 +76,12 @@ public class ObstacleMovement : MonoBehaviour
 
 
 
-
+    private void OnTriggerEnter(Collider other)
+    {
+        if(other.gameObject.CompareTag("DestroyVehicleTrigger"))
+        {
+            Destroy(gameObject);
+        }
+    }
 
 }

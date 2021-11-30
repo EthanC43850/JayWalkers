@@ -7,6 +7,8 @@ public class ShopUI : MonoBehaviour
 {
     public Player playerScript;
     public GameManager gameManagerScript;
+    public AudioSource playerAudio;
+    public AudioClip powerUpSound;
 
     [Header("Balloon Card UI")]
     public Slider balloonSlider;
@@ -15,6 +17,7 @@ public class ShopUI : MonoBehaviour
     public Text balloonCostTxt;
     public GameObject balloonMax;
     public GameObject balloonCostBox;
+    
 
     [Header("Tank Card UI")]
     public Slider tankSlider;
@@ -51,6 +54,7 @@ public class ShopUI : MonoBehaviour
     {
         if (playerScript.balloonUpgradeLevel < 10 && playerScript.currentTotalCoinCount > 250 * playerScript.balloonUpgradeLevel)
         {
+            playerAudio.PlayOneShot(powerUpSound, 1.0f);
             playerScript.balloonUpgradeLevel++;
             Balloon balloonPowerup = new Balloon(playerScript.balloonUpgradeLevel, 250 * playerScript.balloonUpgradeLevel, balloonSlider, balloonLevelTxt, balloonCostTxt);
             playerScript.currentTotalCoinCount -= 250 * playerScript.balloonUpgradeLevel;
@@ -73,6 +77,7 @@ public class ShopUI : MonoBehaviour
     {
         if (playerScript.tankUpgradeLevel < 10 && playerScript.currentTotalCoinCount > 250 * playerScript.tankUpgradeLevel)
         {
+            playerAudio.PlayOneShot(powerUpSound, 1.0f);
             playerScript.tankUpgradeLevel++;
             Tank tankPowerup = new Tank(playerScript.tankUpgradeLevel, 250 * playerScript.tankUpgradeLevel, tankSlider, tankLevelTxt, tankCostTxt);
             playerScript.currentTotalCoinCount -= 250 * playerScript.tankUpgradeLevel;
@@ -96,6 +101,7 @@ public class ShopUI : MonoBehaviour
     {
         if (playerScript.planeUpgradeLevel < 10 && playerScript.currentTotalCoinCount > 250 * playerScript.planeUpgradeLevel)
         {
+            playerAudio.PlayOneShot(powerUpSound, 1.0f);
             playerScript.planeUpgradeLevel++;
             Plane planePowerup = new Plane(playerScript.planeUpgradeLevel, 250 * playerScript.planeUpgradeLevel, planeSlider, planeLevelText, planeCostTxt);
             playerScript.currentTotalCoinCount -= 250 * playerScript.planeUpgradeLevel;
