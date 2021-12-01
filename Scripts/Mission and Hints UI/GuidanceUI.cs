@@ -21,7 +21,7 @@ public class GuidanceUI : MonoBehaviour
 
         if (dialogueNumber == 0 && titleScreenScript.count == 6)
         {
-            StartCoroutine(DisplayHint(4.0f, dialogueNumber));
+            StartCoroutine(DisplayHint(3.0f, dialogueNumber));
             dialogueNumber++;       //Don't place in coroutine
         }
 

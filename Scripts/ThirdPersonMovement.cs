@@ -164,7 +164,8 @@ public class ThirdPersonMovement : MonoBehaviour
             interactUI.SetActive(true);
             if (Input.GetKeyDown(KeyCode.E))
             {
-                gameObject.transform.position = upstairs.transform.position;
+                gameManagerScript.cameraTransitionTimeline.Play();
+                StartCoroutine("TeleportUpstairs");
             }
         }
         else if(Physics.Raycast(lookPos.transform.position, transform.TransformDirection(Vector3.forward), out hit, 1.5f, fireStationExit))
@@ -172,7 +173,8 @@ public class ThirdPersonMovement : MonoBehaviour
             interactUI.SetActive(true);
             if (Input.GetKeyDown(KeyCode.E))
             {
-                gameObject.transform.position = downStairs.transform.position;
+                gameManagerScript.cameraTransitionTimeline.Play();
+                StartCoroutine("TeleportDownstairs");
             }
         }
         else if(Physics.Raycast(lookPos.transform.position, transform.TransformDirection(Vector3.forward), out hit, 1.5f, brokenPlane))
@@ -187,11 +189,23 @@ public class ThirdPersonMovement : MonoBehaviour
         {
             interactUI.SetActive(false);
         }
+    }
 
-
-
+    IEnumerator TeleportUpstairs()
+    {
+        yield return new WaitForSeconds(1.5f);
+        gameObject.transform.position = upstairs.transform.position;
 
     }
+
+    IEnumerator TeleportDownstairs()
+    {
+        yield return new WaitForSeconds(1.5f);
+        gameObject.transform.position = downStairs.transform.position;
+
+    }
+
+
 
     private void OnTriggerEnter(Collider other)
     {

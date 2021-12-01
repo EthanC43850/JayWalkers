@@ -16,6 +16,7 @@ public class GameManager : MonoBehaviour
     public bool gameRestart;
 
     [SerializeField] CinemachineVirtualCamera gameplayCamera;
+    public PlayableDirector cameraTransitionTimeline;
 
     [Header("Main Menu")]
     public GameObject titleScreenUI;
@@ -38,6 +39,7 @@ public class GameManager : MonoBehaviour
     public GameObject thirdPersonCamera;
     public GameObject player;
     public GameObject returnToTownPosition;
+    public PlayableDirector backInTownTimeline;
 
     [Header("Gameplay UI")]
     public GameObject gameOverUI;
@@ -227,28 +229,20 @@ public class GameManager : MonoBehaviour
 
     }
 
+    
+
     public void BackToTown()
     {
-        playerInfoUI.GetComponent<Animator>().SetBool("Open_b", true);
+
         UpdatePlayerUI(titleScreenScript.playerScript);
 
         Cursor.lockState = CursorLockMode.Locked;
         Cursor.visible = false;
-        playerControllerScript.transform.position = new Vector3(returnToTownPosition.transform.position.x, returnToTownPosition.transform.position.y, returnToTownPosition.transform.position.z);
-        playerControllerScript.playerAnim.SetBool("Jump_b", false);
-        playerControllerScript.playerRb.isKinematic = true;     //Rigid body will no longer interfere with third person controller
-        playerControllerScript.playerAnim.SetBool("Death_b", false);
+        
 
         gameOver = false;
         gameStart = false;
         insideTown = true;
-        RestartGame();
-
-        //Enable open-world controls
-        thirdPersonCamera.SetActive(true);
-        player.GetComponent<CharacterController>().enabled = enabled;
-        player.GetComponent<ThirdPersonMovement>().enabled = enabled;
-        
 
         //Disable In-Game UI
         gameOverUI.SetActive(false);
@@ -260,6 +254,43 @@ public class GameManager : MonoBehaviour
         backToTownButton.gameObject.SetActive(false);
 
 
+        StartCoroutine("PoliceStationTimeline");
+
+
+
+    }
+
+
+    IEnumerator PoliceStationTimeline()
+    {
+
+        cameraTransitionTimeline.Play();
+        
+        yield return new WaitForSeconds(1.5f);  //Amount of time it takes for camera to go complete black
+
+        RestartGame();  //Reset the map after camera goes completely dark
+
+
+        //Reposition player
+        backInTownTimeline.Play();
+        thirdPersonCamera.SetActive(true);
+
+        playerControllerScript.transform.position = new Vector3(returnToTownPosition.transform.position.x, returnToTownPosition.transform.position.y, returnToTownPosition.transform.position.z);
+        playerControllerScript.transform.rotation = Quaternion.Euler(returnToTownPosition.transform.rotation.x, returnToTownPosition.transform.rotation.y, returnToTownPosition.transform.rotation.z);
+
+        playerControllerScript.playerAnim.SetBool("Jump_b", false);
+        playerControllerScript.playerRb.isKinematic = true;     //Rigid body will no longer interfere with third person controller
+        playerControllerScript.playerAnim.SetBool("Death_b", false);
+
+        
+        yield return new WaitForSeconds(4.4f);  //After timeline has ended
+        playerInfoUI.GetComponent<Animator>().SetBool("Open_b", true);
+
+
+
+        //Enable open-world controls
+        player.GetComponent<CharacterController>().enabled = enabled;
+        player.GetComponent<ThirdPersonMovement>().enabled = enabled;
 
 
     }

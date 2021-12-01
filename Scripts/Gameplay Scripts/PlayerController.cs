@@ -348,20 +348,11 @@ public class PlayerController : MonoBehaviour
     {
         if (collision.gameObject.CompareTag("Obstacle") && !tankPowerup && !planePowerup)
         {
-            gameManagerScript.gameOver = true;
-            deathSmoke.Play();
-            if (!audioSource.isPlaying) //Ensures that death sound does not spam
-            {
-                audioSource.PlayOneShot(deathSound, 1.0f);
-            }
-
+            GameOver();
             //Physics.IgnoreCollision(collision.gameObject.GetComponent<Collider>(), playerCollider);
-            speed = 0;
-            playerAnim.SetBool("Death_b", true);
-            playerAnim.SetInteger("DeathType_int", 1);
-            Debug.Log("DEAD");
             if (collision.gameObject.layer == 10) //check to see if obstacle is a vehicle
             {
+                Debug.Log("Stopped vehicle wheels and speed");
                 collision.gameObject.GetComponentInParent<ObstacleMovement>().speed = 0;    //Stop the vehicle that the player has hit
                 collision.gameObject.GetComponentInParent<ObstacleMovement>().wheelSpinSpeed = 0;  //Stop vehicle wheels from spinning
             }
@@ -519,6 +510,7 @@ public class PlayerController : MonoBehaviour
     {
         gameManagerScript.gameOver = true;
         deathSmoke.Play();
+        audioSource.PlayOneShot(deathSound, 1.0f);
         speed = 0;
         playerAnim.SetBool("Death_b", true);
         playerAnim.SetInteger("DeathType_int", 1);
@@ -541,7 +533,7 @@ public class PlayerController : MonoBehaviour
 
 
 
-        // This code is if I want the player to be able to hit the side of a car and still live
+        // This code is if I want the player to be able to hit the side of a car and still live ORRR Keep track of the previous lane number by making a previous lane variable and simply return to previous lane
         /*if (other.gameObject.tag == "VehicleRightSide")
         {
             laneNumber++;

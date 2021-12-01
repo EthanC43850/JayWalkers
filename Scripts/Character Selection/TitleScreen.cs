@@ -94,6 +94,7 @@ public class TitleScreen : MonoBehaviour
     public List<GameObject> characterList;
 
     public GameObject skipCutsceneBtn;
+    [SerializeField] GameObject hintsPanel;
 
     //public Button loadBtn;
     public Button saveBtn;
@@ -115,7 +116,7 @@ public class TitleScreen : MonoBehaviour
         characterSelectUI.SetActive(true);
         dialogueBoxGameObject.SetActive(true);
         characterDescriptionBox.SetActive(true);
-
+        hintsPanel.SetActive(true);
         
     }
 
