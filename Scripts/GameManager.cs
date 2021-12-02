@@ -8,6 +8,7 @@ using Cinemachine;
 
 public class GameManager : MonoBehaviour
 {
+    [Header("Game States")]
     public bool titleScreen;
     public bool mainMenu;
     public bool insideTown;

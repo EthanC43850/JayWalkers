@@ -5,6 +5,7 @@ using TMPro;
 
 public class PlayerController : MonoBehaviour
 {
+    [Header("Outside Scripts")]
     public PowerUpMeter powerupMeterScript;
     private MainCamera mainCameraScript;
     private PlatformSpawner platformSpawnerScript;
@@ -130,7 +131,6 @@ public class PlayerController : MonoBehaviour
         mainCameraScript = GameObject.Find("CM Running Vcam").GetComponent<MainCamera>();
         gameManagerScript = GameObject.Find("Game Manager").GetComponent<GameManager>();
         platformSpawnerScript = GameObject.Find("Platform Spawner").GetComponent<PlatformSpawner>();
-
 
 
         //transform.position = new Vector3(transform.position.x, transform.position.y, lanes[1].transform.position.z); //Places player in lane one
@@ -272,7 +272,6 @@ public class PlayerController : MonoBehaviour
             //playerCollider.size = new Vector3(13, 3, 6.0f);
             playerRb.velocity = Vector3.zero;       //Activating Plane power up while in the middle of a jump won't make the plane soar above and beyond????
             planePowerupMeterUI.SetActive(true);
-            //plane.SetActive(true);
             planePowerupTimeLeft -= Time.deltaTime;
             powerupMeterScript.UpdatePlanePowerMeter(planePowerupTimeLeft); //The amount of time left for the plane power up is displayed in the UI meter
         }
@@ -282,8 +281,6 @@ public class PlayerController : MonoBehaviour
         {
             //Keep in mind, when player jumps on an elevated platform and activates a plane, the jump makes the plane soar much higher
             //because of velocity, which is why I set velocity to zero before activating powerup
-
-
             if (Physics.Raycast(transform.position + Vector3.up, Vector3.down, out hit, Mathf.Infinity, planeLayerMask))
             {
                 float distanceToGround = hit.distance;
@@ -300,8 +297,6 @@ public class PlayerController : MonoBehaviour
                     transform.rotation = Quaternion.Euler(0f, -90f, 0f);
 
                 }
-
-
                 Debug.Log("The player is " + distanceToGround + " feet high");
 
             }
@@ -327,20 +322,11 @@ public class PlayerController : MonoBehaviour
 
         if (tankPowerup && tankPowerupDuration > 0) //The meter for the tank powerup duration decreases
         {
-            
-
-
-
             miniTank.transform.position = Vector3.Lerp(transform.position, new Vector3(transform.position.x, transform.position.y, lanes[laneNumber].transform.position.z), changeLaneSpeed);
             playerCollider.size = new Vector3(2, 3, 6.8f);
             tankPowerUpMeterUI.SetActive(true);
             tankPowerupDuration -= Time.deltaTime;
             powerupMeterScript.UpdateTankPowerMeter(tankPowerupDuration); //The amount of time left for the baloon power up is displayed in the UI coin meter
-        }
-
-        if (Input.GetKeyDown(KeyCode.R)) //When game restarts
-        {
-
         }
     }
 
@@ -363,10 +349,6 @@ public class PlayerController : MonoBehaviour
             Destroy(collision.gameObject);
 
         }
-
-
-
-
     }
 
 
@@ -623,11 +605,6 @@ public class PlayerController : MonoBehaviour
         playerRb.collisionDetectionMode = CollisionDetectionMode.ContinuousDynamic;
         gameObject.GetComponent<CharacterController>().enabled = !enabled;
         gameObject.GetComponent<ThirdPersonMovement>().enabled = !enabled;
-
-
-
-
-
     }
 
 
