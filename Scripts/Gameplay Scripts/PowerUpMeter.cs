@@ -73,6 +73,8 @@ public class PowerUpMeter : MonoBehaviour
         if (timeRemaining <= 0)
         {
             playerControllerScript.powerupSmoke.Play();
+            playerControllerScript.audioSource.loop = false;
+            playerControllerScript.audioSource.Stop();
             playerControllerScript.transform.rotation = Quaternion.Euler(0f, -90f, 0f); //Correct the players tilt
             playerControllerScript.planePowerup = false;
             playerControllerScript.plane.SetActive(false);

@@ -101,6 +101,9 @@ public class TitleScreen : MonoBehaviour
 
     public GameObject loadButton;
     public GameObject saveButton;
+
+
+    
     
     
     
@@ -128,14 +131,14 @@ public class TitleScreen : MonoBehaviour
         //If beginDialgue (The gameobject acting as my trigger in the timelines) activates, start dialogue
         if (beginDialogue.activeSelf && timeLeft <= 0.0f)
         {
-            
             if (count < 4)
             {
                 dialogueTriggerScript.TriggerSpecificDialogue(dialogueTriggers[count].dialogue);
             }
             count++;
 
-            //Prevents the dialogueTrigger function to be called through multiple frames from timeline
+            //Prevents the dialogueTrigger function to be called through multiple frames from timeline. 
+            //How this works is that the 'beginDialogue' gameobject is activated for only a frame at the start of the next playable director.
             timeLeft = 0.5f;
         }
         if(timeLeft > 0.0f)
@@ -146,15 +149,14 @@ public class TitleScreen : MonoBehaviour
 
         //Start Character Selection
         //CREATE A PANEL THAT GIVES THE PLAYER THE DIRECTIONS TO "Hover your mouse over a character to select one"
-
         if(count == 5)
         {
 
             skipCutsceneBtn.SetActive(false);
             for (int i = 1; i < 5; i++)
             {
-                timeLineControllerScript.playableDirectors[i].gameObject.SetActive(false);  //disable all time lines completely to prevent future camera interference
-            }
+                timeLineControllerScript.playableDirectors[i].gameObject.SetActive(false);  //disable all time lines completely to prevent future camera interference 
+            }                                                                               //(This only happened because scene count went up after titlescreen cutscene was skipped)
             characterSelectUIAnimator.SetBool("Is_Open", true);
             characterSelectActive = true;
             count++;
@@ -174,6 +176,7 @@ public class TitleScreen : MonoBehaviour
         gameManagerScript.titleScreenUI.SetActive(false);
         titleScreenPlayableDirector.Stop();
     }
+
 
     public void SkipCutscene()
     {

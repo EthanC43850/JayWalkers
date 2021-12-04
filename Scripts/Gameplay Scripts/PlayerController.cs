@@ -105,9 +105,11 @@ public class PlayerController : MonoBehaviour
 
     [Header("Sound FX:")]
     public AudioSource audioSource;
+    public AudioClip laneSwitchSound;
     public AudioClip jumpSound;
     public AudioClip slideSound;
     public AudioClip deathSound;
+    public AudioClip planeSound;
     //public AudioClip coinSound;
     //public AudioClip Soda;
 
@@ -258,6 +260,9 @@ public class PlayerController : MonoBehaviour
 
             planePowerup = true;
             speed = 120;
+            audioSource.clip = planeSound;
+            audioSource.loop = true;
+            audioSource.Play();
             plane.SetActive(true);               //TESTT
             //plane.transform.localRotation = Quaternion.Slerp(Quaternion.identity, planeTiltUp, 0.2f);
             playerMesh.SetActive(false);       //TEST
@@ -362,6 +367,10 @@ public class PlayerController : MonoBehaviour
 
             if (Input.GetKeyDown(KeyCode.LeftArrow) || Input.GetKeyDown(KeyCode.A))
             {
+                if(planePowerup != true)
+                {
+                    audioSource.PlayOneShot(laneSwitchSound, 0.7f);
+                }
                 laneNumber--;
                 laneNumber = Mathf.Clamp(laneNumber, 0, 3); //If lane number is less than 0, return the minimum value 0. If the lane number becomes greater than 3, return the maximum value 3
                 //Debug.Log(laneNumber);
@@ -369,6 +378,10 @@ public class PlayerController : MonoBehaviour
             }
             else if (Input.GetKeyDown(KeyCode.RightArrow) || Input.GetKeyDown(KeyCode.D))
             {
+                if (planePowerup != true)
+                {
+                    audioSource.PlayOneShot(laneSwitchSound, 1.0f);
+                }
                 laneNumber++;
                 laneNumber = Mathf.Clamp(laneNumber, 0, 3);
 
@@ -492,6 +505,7 @@ public class PlayerController : MonoBehaviour
     {
         gameManagerScript.gameOver = true;
         deathSmoke.Play();
+        audioSource.Stop();
         audioSource.PlayOneShot(deathSound, 1.0f);
         speed = 0;
         playerAnim.SetBool("Death_b", true);

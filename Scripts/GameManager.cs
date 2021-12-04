@@ -76,6 +76,10 @@ public class GameManager : MonoBehaviour
     public Text characterLevelCardUI;
     public Text characterJailTimeCardUI;
 
+    [Header("Music")]
+    public AudioSource musicSource;
+    public Animator musicSourceAnimator;
+    public AudioSource cityAmbiance;
 
 
 
@@ -83,7 +87,7 @@ public class GameManager : MonoBehaviour
     void Start()
     {
         titleScreen = true;
-        titleScreenUI.SetActive(true);
+        //titleScreenUI.SetActive(true);
         platformSpawnerScript = GameObject.Find("Platform Spawner").GetComponent<PlatformSpawner>();
     }
 
@@ -92,7 +96,10 @@ public class GameManager : MonoBehaviour
 
     void Update()
     {
-
+        if (Input.GetKeyDown(KeyCode.H))
+        {
+            titleScreenUI.SetActive(true);
+        }
 
         if (Input.GetKeyDown(KeyCode.P))
         {
@@ -111,6 +118,9 @@ public class GameManager : MonoBehaviour
             gameStart = true;
             thirdPersonCamera.SetActive(false);
 
+            musicSource.Play();
+            cityAmbiance.volume = 0.2f;
+
             titleScreenScript.playerScript.jailTime++;
 
 
@@ -126,6 +136,8 @@ public class GameManager : MonoBehaviour
             cashUI.SetActive(true);
             coinMeterUI.SetActive(true);
             multiplierUI.SetActive(true);
+            //musicSourceAnimator.SetInteger("Volume Level", 10); //fades in music
+            
         }
 
         if (gameOver)
@@ -134,6 +146,7 @@ public class GameManager : MonoBehaviour
             Cursor.lockState = CursorLockMode.None;
             Cursor.visible = true;
             backToTownButton.gameObject.SetActive(true);
+            musicSource.Stop();
 
         }
         else if (!gameOver && !insideTown)
@@ -287,7 +300,7 @@ public class GameManager : MonoBehaviour
         yield return new WaitForSeconds(4.4f);  //After timeline has ended
         playerInfoUI.GetComponent<Animator>().SetBool("Open_b", true);
 
-
+        cityAmbiance.volume = 0.9f;
 
         //Enable open-world controls
         player.GetComponent<CharacterController>().enabled = enabled;
