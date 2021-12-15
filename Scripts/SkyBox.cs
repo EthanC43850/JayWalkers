@@ -16,7 +16,7 @@ public class SkyBox : MonoBehaviour
 
     void Start()
     {
-        
+        skyBox.transform.position = new Vector3(1672, -8.57f, 261);
         rend = GetComponent<Renderer>();
     }
 
@@ -31,7 +31,7 @@ public class SkyBox : MonoBehaviour
         else if (gameManagerScript.insideTown)
         {
             //Debug.Log("move skybox back to start");
-            skyBox.transform.position = new Vector3(1672, -8.57f, 261);
+            StartCoroutine("ReturnToOrigin");
         }
         offset = scrollSpeed * Time.time;
         //change skybox from day to night
@@ -40,4 +40,12 @@ public class SkyBox : MonoBehaviour
 
 
     }
+
+    IEnumerator ReturnToOrigin()
+    {
+        yield return new WaitForSeconds(1.7f); //Wait 1.5 seconds for the screen to go black before returning skybox to origin
+        skyBox.transform.position = new Vector3(1672, -8.57f, 261);
+
+    }
+
 }

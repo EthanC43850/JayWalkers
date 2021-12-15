@@ -69,6 +69,7 @@ public class Player : MonoBehaviour
         characterNumber = data.characterNumber;
         level = data.level;
         currentTotalCoinCount = data.currentTotalCoinCount;
+        currentTotalSodaCount = data.currentTotalSodaCount;
         networth = data.networth;
         jailTime = data.jailTime;
 

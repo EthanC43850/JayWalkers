@@ -302,7 +302,7 @@ public class PlayerController : MonoBehaviour
                     transform.rotation = Quaternion.Euler(0f, -90f, 0f);
 
                 }
-                Debug.Log("The player is " + distanceToGround + " feet high");
+                //Debug.Log("The player is " + distanceToGround + " feet high");
 
             }
         }
@@ -521,11 +521,10 @@ public class PlayerController : MonoBehaviour
         //Activates the next platform
         if (other.gameObject.CompareTag("Platform"))
         {
-            Debug.Log("NEXT PLATFORM SPAWNED");
             platformSpawnerScript.SpawnPlatform();  //causes the next platform to spawn
-
             Destroy(other.transform.parent.gameObject, 1.0f);  // Call a function that destroys platform and objects
-        }
+            
+    }
 
 
 

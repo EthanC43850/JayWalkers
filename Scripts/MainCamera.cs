@@ -43,7 +43,7 @@ public class MainCamera : MonoBehaviour
     {
         if (gameManagerScript.gameOver == true)
         {
-            transform.LookAt(player.transform); //Change later for smooth camera transition
+            //transform.LookAt(player.transform); //Change later for smooth camera transition
             //StartCoroutine("CameraDeathEffect");
         }
         

@@ -96,10 +96,7 @@ public class GameManager : MonoBehaviour
 
     void Update()
     {
-        if (Input.GetKeyDown(KeyCode.H))
-        {
-            titleScreenUI.SetActive(true);
-        }
+        
 
         if (Input.GetKeyDown(KeyCode.P))
         {
@@ -120,6 +117,7 @@ public class GameManager : MonoBehaviour
 
             musicSource.Play();
             cityAmbiance.volume = 0.2f;
+
 
             titleScreenScript.playerScript.jailTime++;
 
@@ -171,11 +169,11 @@ public class GameManager : MonoBehaviour
         totalDrinks = 0;
         UpdateDrinkCount(0);
 
-        titleScreenScript.playerScript.jailTime++;
 
 
         if (insideTown != true)
         {
+            //The camera moves to look at the road after clicking on return to town because of this.
             mainCameraScript.transform.rotation = Quaternion.Slerp(mainCameraScript.transform.rotation, mainCameraScript.defaultCameraRotation, Time.deltaTime * mainCameraScript.cameraRotateSpeed);
             playerControllerScript.transform.rotation = Quaternion.Euler(0f, -90f, 0f);                //Make sure that plane power up did not tilt the player
             playerControllerScript.speed = playerControllerScript.startSpeed;
@@ -254,9 +252,10 @@ public class GameManager : MonoBehaviour
         Cursor.visible = false;
         
 
-        gameOver = false;
         gameStart = false;
-        insideTown = true;
+        gameOver = false;   
+        insideTown = true;  
+
 
         //Disable In-Game UI
         gameOverUI.SetActive(false);
@@ -281,7 +280,7 @@ public class GameManager : MonoBehaviour
         cameraTransitionTimeline.Play();
         
         yield return new WaitForSeconds(1.5f);  //Amount of time it takes for camera to go complete black
-
+        
         RestartGame();  //Reset the map after camera goes completely dark
 
 

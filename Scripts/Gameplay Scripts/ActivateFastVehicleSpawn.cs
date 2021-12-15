@@ -10,6 +10,11 @@ public class ActivateFastVehicleSpawn : MonoBehaviour
     void Start()
     {
         platformScript = gameObject.GetComponentInParent<Platform>();
+        if (platformScript.horizontalObstacles)
+        {
+            platformScript.startSpawning = true;
+            platformScript.StartCoroutine("SpawnFastMovingVehicles");
+        }
     }
 
     // Update is called once per frame
@@ -24,10 +29,9 @@ public class ActivateFastVehicleSpawn : MonoBehaviour
     private void OnTriggerEnter(Collider other)
     {
         if (other.gameObject.CompareTag("Player") && platformScript.randNum == 1){
-            
             platformScript.startSpawning = true;
             platformScript.StartCoroutine("SpawnFastMovingVehicles");
-            Debug.Log("THE LONG BRIDGE PLAFORM WILL BEGIN SPAWNING FAST VEHICLES");
+            //Debug.Log("THE LONG BRIDGE PLAFORM WILL BEGIN SPAWNING FAST VEHICLES");
         }
         else if(other.gameObject.CompareTag("Player") && platformScript.randNum == 0)
         {

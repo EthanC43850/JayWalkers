@@ -9,6 +9,7 @@ public class Platform : MonoBehaviour
     PlatformSpawner platformSpawnerScript;
     GameManager gameManagerScript;
     public int randNum = 0;
+    public bool horizontalObstacles;
     public bool spaceTaken;
     public bool startSpawning;
     public GameObject[] obstacleArray;
@@ -62,7 +63,8 @@ public class Platform : MonoBehaviour
 
     void SpawnObstacles()
     {
-            obstacleIndex = Random.Range(0, obstacleArray.Length);
+            obstacleIndex = Random.Range(0, obstacleArray.Length-1);
+            //Debug.Log("Obstacle index number is " + obstacleIndex);
             Instantiate(obstacleArray[obstacleIndex], staticObstacleSpawnPoint.transform.position, Quaternion.identity);
     }
     
@@ -78,19 +80,20 @@ public class Platform : MonoBehaviour
             }
             else
             {
-                Instantiate(slowMovingObstacleArray[obstacleIndex], transform.GetChild(3).position, Quaternion.identity); // Multidimensional array to create cool obstacle patterns
+                Instantiate(slowMovingObstacleArray[obstacleIndex], movingObjectSpawnPoint.transform.position, Quaternion.identity); // Multidimensional array to create cool obstacle patterns
             }
             yield return new WaitForSeconds(2.0f);
         }
     }   //W.I.P
 
+    
     IEnumerator SpawnFastMovingVehicles()
     {
-        Debug.Log("FAST VEHICLES OTW");
+        //Begin spawning when player hits trigger
         while (startSpawning == true)
         {
             obstacleIndex = Random.Range(0, fastMovingObstacleArray.Length);
-            if (spaceTaken == true)
+            if (spaceTaken == true)                                                 //Ensure vehicles dont over spawn
             {
                 yield return new WaitForSeconds(0.5f);
             }
@@ -98,6 +101,7 @@ public class Platform : MonoBehaviour
             {
                 Instantiate(fastMovingObstacleArray[obstacleIndex], movingObjectSpawnPoint.transform.position, Quaternion.identity); // Multidimensional array to create cool obstacle patterns
             }
+
             yield return new WaitForSeconds(fastObstacleSpawnRate);
         }
     }
@@ -111,7 +115,6 @@ public class Platform : MonoBehaviour
         if(other.gameObject.CompareTag("Player"))
         {
             startSpawning = false;
-            Debug.Log("STOP SPAWNING IS TRUE");
         }
     }
 

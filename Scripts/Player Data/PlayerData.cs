@@ -42,6 +42,7 @@ public class PlayerData
         jailTime = player.jailTime;
 
         currentTotalCoinCount = player.currentTotalCoinCount;
+        currentTotalSodaCount = player.currentTotalSodaCount;
         balloonUpgradeLevel = player.balloonUpgradeLevel;
         tankUpgradeLevel = player.tankUpgradeLevel;
         planeUpgradeLevel = player.planeUpgradeLevel;

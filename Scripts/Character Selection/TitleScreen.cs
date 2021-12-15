@@ -281,6 +281,9 @@ public class TitleScreen : MonoBehaviour
     {
         cutSceneTools.SetActive(false);
 
+
+
+
         //Load previously saved data
         PlayerData data = SaveSystem.LoadPlayer();
         currentCharacterNumber = data.characterNumber;
@@ -291,6 +294,11 @@ public class TitleScreen : MonoBehaviour
         //Assign which character the gameplay camera needs to follow
         gameplayCameraScript.player = characterList[characterNumber];
         gameManagerScript.player = characterList[characterNumber];
+        skyBoxScript.player = characterList[characterNumber];                                       //Tell the skybox which character to follow on start of run
+
+        //Make sure the ground marker and the second box collider (which is the trigger) is disabled
+        highLightScript = characterList[characterNumber].GetComponent<Highlight>();
+        highLightScript.highLightScriptBoxCollider.enabled = !enabled;
 
         //Assign which ThirdPersonPlayer script and playercontroller script is being used
         playerControllerScript = characterList[characterNumber].GetComponent<PlayerController>();
@@ -304,6 +312,7 @@ public class TitleScreen : MonoBehaviour
         
         characterList[characterNumber].GetComponent<CharacterController>().enabled = enabled;
         characterList[characterNumber].GetComponent<ThirdPersonMovement>().enabled = enabled;
+
         thirdPersonCameraScript.Follow = characterList[characterNumber].transform;
         thirdPersonCameraScript.LookAt = characterList[characterNumber].transform;
         thirdPersonCameraScript.Priority = 20;
