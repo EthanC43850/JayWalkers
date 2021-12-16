@@ -159,6 +159,11 @@ public class GameManager : MonoBehaviour
 
     }
 
+    private void FixedUpdate()  //Make sure to place score counter in fixed update to keep accuracy across multiple devices
+    {
+        
+    }
+
 
     public void RestartGame()
     {

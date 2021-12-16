@@ -14,12 +14,13 @@ public class Player : MonoBehaviour
     public int level;
     public int networth;
     public int jailTime;
+    public int highScore;
 
     public int currentTotalCoinCount;
-    //Capable of buying sodas or planes before a run
     public int currentTotalSodaCount;
-    public int currentTotalPlaneCount;
+    public int currentTotalPlaneCount;    //Capable of buying sodas or planes before a run
     public int currentTotalTankCount;
+    
 
     
 
@@ -72,6 +73,7 @@ public class Player : MonoBehaviour
         currentTotalSodaCount = data.currentTotalSodaCount;
         networth = data.networth;
         jailTime = data.jailTime;
+        highScore = data.highScore;
 
         currentTotalCoinCount = data.currentTotalCoinCount;
         balloonUpgradeLevel = data.balloonUpgradeLevel;

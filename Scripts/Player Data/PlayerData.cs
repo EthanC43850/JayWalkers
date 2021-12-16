@@ -14,10 +14,11 @@ public class PlayerData
     public int level;
     public int jailTime;
     public int networth;
-    public int currentTotalCoinCount;
+    public int highScore;
 
 
     //Capable of buying sodas or planes before a run
+    public int currentTotalCoinCount;
     public int currentTotalSodaCount;
     public int currentTotalPlaneCount;
     public int currentTotalTankCount;
@@ -40,6 +41,7 @@ public class PlayerData
         level = player.level;
         networth = player.networth;
         jailTime = player.jailTime;
+        highScore = player.highScore;
 
         currentTotalCoinCount = player.currentTotalCoinCount;
         currentTotalSodaCount = player.currentTotalSodaCount;
