@@ -281,9 +281,6 @@ public class TitleScreen : MonoBehaviour
     {
         cutSceneTools.SetActive(false);
 
-
-
-
         //Load previously saved data
         PlayerData data = SaveSystem.LoadPlayer();
         currentCharacterNumber = data.characterNumber;

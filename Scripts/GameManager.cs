@@ -59,7 +59,7 @@ public class GameManager : MonoBehaviour
 
 
     [Header("Player Stats")]
-    private int score;
+    public int score;
     public int totalDrinks;
     public int totalCurrentCash;
 
@@ -72,6 +72,7 @@ public class GameManager : MonoBehaviour
 
     [Header("Player Card UI")]
     public Text characterTypeCardUI;
+    public Text characterHighScoreUI;
     public Text characterNetworthCardUI;
     public Text characterLevelCardUI;
     public Text characterJailTimeCardUI;
@@ -105,9 +106,8 @@ public class GameManager : MonoBehaviour
             gameplayCamera.Priority = 20;
             mainCameraScript.smoothSpeed = 1;
             mainCameraScript.StartCoroutine("CameraSmoothStart");
-            mainCameraScript.player.transform.rotation = Quaternion.Euler(0f, -90f, 0f);
+            mainCameraScript.player.transform.rotation = Quaternion.Euler(0f, -90f, 0f);    //Ensure player faces the right way after jaywalking
             playerControllerScript.EnableRunningState();
-            //platformSpawnerScript.SpawnInitialPlatforms();
 
             insideTown = false;
             mainMenu = false;
@@ -147,11 +147,7 @@ public class GameManager : MonoBehaviour
             musicSource.Stop();
 
         }
-        else if (!gameOver && !insideTown)
-        {
-            UpdateScore(1);
-            gameOverUI.SetActive(false);
-        }
+         
 
 
 
@@ -161,7 +157,11 @@ public class GameManager : MonoBehaviour
 
     private void FixedUpdate()  //Make sure to place score counter in fixed update to keep accuracy across multiple devices
     {
-        
+        if (!gameOver && !insideTown)
+        {
+            UpdateScore(1);
+            gameOverUI.SetActive(false);
+        }
     }
 
 
@@ -217,10 +217,7 @@ public class GameManager : MonoBehaviour
     }
 
 
-    IEnumerator StartScoreCount()
-    {
-        yield return new WaitForSeconds(0.2f);
-    }
+
 
     //Update in-game UI
     private void UpdateScore(int scoreToAdd)
@@ -331,9 +328,9 @@ public class GameManager : MonoBehaviour
 
         //State ID UI
         characterTypeCardUI.text = playerScript.characterType;
-        characterNetworthCardUI.text = "$ " + playerScript.networth.ToString();
-        characterTypeCardUI.text = playerScript.characterType;
+        characterHighScoreUI.text = playerScript.highScore.ToString();
         characterLevelCardUI.text = playerScript.level.ToString();
+        characterNetworthCardUI.text = "$ " + playerScript.networth.ToString();
         characterJailTimeCardUI.text = playerScript.jailTime.ToString();
 
 

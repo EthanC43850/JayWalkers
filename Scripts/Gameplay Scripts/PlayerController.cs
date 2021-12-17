@@ -12,11 +12,6 @@ public class PlayerController : MonoBehaviour
     private GameManager gameManagerScript;
     public Player playerScript;
 
-
-
-    [Header("Player Data")]
-    public int playerTotalCoins = 0;
-
     [Header("Player Controls:")]
     public float speed;
     public float startSpeed;
@@ -40,8 +35,6 @@ public class PlayerController : MonoBehaviour
     [SerializeField] float stepHeight = 0.3f;
     [SerializeField] float stepSmooth = 2f; //The higher the step smooth is, the higher the character will jump up. The lower the step smooth, the smoother the transition*/
 
-
-
     [Header("Balloon Powerup:")]
     public bool balloonPowerup;
     public float balloonPowerUpTime;
@@ -55,10 +48,8 @@ public class PlayerController : MonoBehaviour
     public float tankPowerupDuration;
     public GameObject miniTank;
     public GameObject tankPowerUpMeterUI;
-   // [HideInInspector]
     public Quaternion normalRotation = Quaternion.Euler(0f, -90, 0f);
 
-    
     [Header("Plane Powerup:")]
     public bool planePowerup;
     public float planeSmoothTime;
@@ -68,13 +59,12 @@ public class PlayerController : MonoBehaviour
     public GameObject planePowerupMeterUI;
     private Quaternion planeTiltUp = Quaternion.Euler(-29f, -0.25f, 0f);
     private Quaternion planeFlat = Quaternion.Euler(0f, -0.25f, 0f);
-    [SerializeField] LayerMask planeLayerMask;                              //Plane should not detect vehicle objects
+    [SerializeField] LayerMask planeLayerMask;                              
 
  
 
 
     [Header("Particles:")]
-    //Create powerups here
     public ParticleSystem yellowFireWork;
     public ParticleSystem greenFireWork;
     public ParticleSystem powerupSmoke;
@@ -83,10 +73,6 @@ public class PlayerController : MonoBehaviour
     public GameObject playerBalloons;
 
 
-    //public bool grenadesPowerup;
-
-    //public GameObject bomb;
-    //public Transform bombPos;
 
     public GameObject playerStartPos;
 
@@ -94,13 +80,10 @@ public class PlayerController : MonoBehaviour
 
 
     
-    
+    [Header("Player Build")]
     public Animator playerAnim;
-    //[HideInInspector]
     public Rigidbody playerRb;
-    
     public BoxCollider playerCollider;
-    //[HideInInspector]
     public GameObject playerMesh;
 
     [Header("Sound FX:")]
@@ -114,20 +97,11 @@ public class PlayerController : MonoBehaviour
     //public AudioClip Soda;
 
 
-
-    
-
-
-
-    
-
-  
-
-
     void Start()
     {
-        speed = startSpeed;
 
+        speed = startSpeed;               //Initialize player speed to the slowest speed         
+        Physics.gravity *= gravityModifier;
         playerRb = GetComponent<Rigidbody>();         
         playerCollider = GetComponent<BoxCollider>();
         mainCameraScript = GameObject.Find("CM Running Vcam").GetComponent<MainCamera>();
@@ -136,7 +110,6 @@ public class PlayerController : MonoBehaviour
 
 
         //transform.position = new Vector3(transform.position.x, transform.position.y, lanes[1].transform.position.z); //Places player in lane one
-        Physics.gravity *= gravityModifier;
     }
 
    
@@ -145,35 +118,19 @@ public class PlayerController : MonoBehaviour
 
     void Update()
     {
-
-        /*if (Input.GetKeyDown(KeyCode.J))
-        {
-            transform.rotation = Quaternion.Euler(-20f, -90f, 0f);
-        }
-        if (Input.GetKeyDown(KeyCode.H))
-        {
-            transform.rotation = Quaternion.Euler(0f, -90f, 0f);
-        }*/
-
-        //Player movement
+        //Running-Player Movement
         if (gameManagerScript.gameOver != true && gameManagerScript.mainMenu != true && gameManagerScript.insideTown != true)
         {
-
-            
-            transform.position += transform.forward * speed * Time.deltaTime;
-            
-            //transform.Translate(transform.right * speed * Time.deltaTime);    //transform translate bad
-
             playerAnim.SetBool("Death_b", false);
             playerAnim.SetBool("Running_b", true);
+            transform.position += transform.forward * speed * Time.deltaTime;
             CheckForJump();
             SwitchLanes();
-            //BombThrow();  //obsolete
             BalloonPowerup();
             TankPowerup();
             PlanePowerup();
             Vector3 targetPosition = new Vector3(transform.position.x, transform.position.y, lanes[laneNumber].transform.position.z);
-            transform.position = Vector3.Lerp(transform.position, targetPosition, changeLaneSpeed);                                     //smooth transition from original position to target lane
+            transform.position = Vector3.Lerp(transform.position, targetPosition, changeLaneSpeed);         //smooth transition from original position to target lane
         }
 
 
@@ -192,7 +149,7 @@ public class PlayerController : MonoBehaviour
     }
 
 
-    /*void FixedUpdate()  //When dealing with RB's FixedUpdate should be used
+    /*void FixedUpdate()  //When dealing with RB's FixedUpdate should be used (Disagree)
     {
         //stepClimb();
     }*/
@@ -257,25 +214,22 @@ public class PlayerController : MonoBehaviour
 
         if (Input.GetKeyDown(KeyCode.O))
         {
-
             planePowerup = true;
             speed = 120;
             audioSource.clip = planeSound;
             audioSource.loop = true;
             audioSource.Play();
-            plane.SetActive(true);               //TESTT
-            //plane.transform.localRotation = Quaternion.Slerp(Quaternion.identity, planeTiltUp, 0.2f);
-            playerMesh.SetActive(false);       //TEST
+            plane.SetActive(true);               
+            playerMesh.SetActive(false);       
             playerRb.useGravity = false;
             powerupMeterScript.SetPlanePowerMeterMax(planePowerupTime);
             planePowerupTimeLeft = planePowerupTime;
-
         }
 
-        if (planePowerup && planePowerupTimeLeft > 0) //The meter for the balloon powerup duration decreases
+        if (planePowerup && planePowerupTimeLeft > 0)
         {
             //playerCollider.size = new Vector3(13, 3, 6.0f);
-            playerRb.velocity = Vector3.zero;       //Activating Plane power up while in the middle of a jump won't make the plane soar above and beyond????
+            playerRb.velocity = Vector3.zero;       
             planePowerupMeterUI.SetActive(true);
             planePowerupTimeLeft -= Time.deltaTime;
             powerupMeterScript.UpdatePlanePowerMeter(planePowerupTimeLeft); //The amount of time left for the plane power up is displayed in the UI meter
@@ -302,14 +256,11 @@ public class PlayerController : MonoBehaviour
                     transform.rotation = Quaternion.Euler(0f, -90f, 0f);
 
                 }
-                //Debug.Log("The player is " + distanceToGround + " feet high");
-
             }
         }
     }
 
-    //Give the tank code so that it stays in the same lane as the player
-    private void TankPowerup() //When speeding up and slowing down tank, box collider displacement occurs. To fix, code the tank to return to 0 on relativeposition z when displacement is greater than 1
+    private void TankPowerup() 
     {
         if (Input.GetKeyDown(KeyCode.T))
         {
@@ -340,7 +291,7 @@ public class PlayerController : MonoBehaviour
         if (collision.gameObject.CompareTag("Obstacle") && !tankPowerup && !planePowerup)
         {
             GameOver();
-            //Physics.IgnoreCollision(collision.gameObject.GetComponent<Collider>(), playerCollider);
+            Physics.IgnoreCollision(collision.gameObject.GetComponent<Collider>(), playerCollider);
             if (collision.gameObject.layer == 10) //check to see if obstacle is a vehicle
             {
                 Debug.Log("Stopped vehicle wheels and speed");
@@ -469,7 +420,6 @@ public class PlayerController : MonoBehaviour
 
     IEnumerator Slide()
     {
-
         isCrouching = true;
         playerCollider.size = new Vector3(2, 1.5f, 2);
         playerCollider.center = new Vector3(0, 0.7f, playerCollider.center.z);
@@ -489,18 +439,6 @@ public class PlayerController : MonoBehaviour
 
     }
 
-
-
-
-    /*private void BombThrow()
-    {
-        if (Input.GetKeyDown(KeyCode.B))
-        {
-            Instantiate(bomb, bombPos.transform.position, bombPos.transform.rotation);
-        }
-
-    }*/
-
     private void GameOver()
     {
         gameManagerScript.gameOver = true;
@@ -510,6 +448,14 @@ public class PlayerController : MonoBehaviour
         speed = 0;
         playerAnim.SetBool("Death_b", true);
         playerAnim.SetInteger("DeathType_int", 1);
+
+        if(gameManagerScript.score > playerScript.highScore)
+        {
+            playerScript.highScore = gameManagerScript.score;
+        }
+
+
+
     }
 
 
@@ -527,7 +473,7 @@ public class PlayerController : MonoBehaviour
     }
 
 
-
+        #region Test Trigger Collision
         // This code is if I want the player to be able to hit the side of a car and still live ORRR Keep track of the previous lane number by making a previous lane variable and simply return to previous lane
         /*if (other.gameObject.tag == "VehicleRightSide")
         {
@@ -539,6 +485,7 @@ public class PlayerController : MonoBehaviour
             laneNumber--;
             deathSmoke.Play();
         }*/
+        #endregion
 
 
         if (other.gameObject.tag == "Obstacle" && tankPowerup == false && planePowerup == false)
@@ -610,6 +557,7 @@ public class PlayerController : MonoBehaviour
 
 
     }
+
 
     public void EnableRunningState()
     {
