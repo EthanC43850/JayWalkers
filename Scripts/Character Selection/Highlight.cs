@@ -57,7 +57,6 @@ public class Highlight : MonoBehaviour
         if (titleScreenScript.characterSelectActive && !titleScreenScript.playerSelected)
         {
             titleScreenScript.playerSelected = true;
-            titleScreenScript.inputField.SetActive(true);
             titleScreenScript.characterDescriptionBoxAnimator.SetBool("Is_Open", true);
             titleScreenScript.characterSelectUIAnimator.SetBool("Is_Open", false);
 
@@ -88,7 +87,6 @@ public class Highlight : MonoBehaviour
 
     public void ExitCharacter()
     {
-        titleScreenScript.inputField.SetActive(false);
         groundMarker.SetActive(false);
         titleScreenScript.characterDescriptionBoxAnimator.SetBool("Is_Open", false);
         titleScreenScript.characterSelectUIAnimator.SetBool("Is_Open", true);

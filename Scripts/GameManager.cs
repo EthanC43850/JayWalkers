@@ -15,6 +15,8 @@ public class GameManager : MonoBehaviour
     public bool gameStart;
     public bool gameOver;
     public bool gameRestart;
+    public bool achievedHighScore = false;
+    public bool isMenuOpen;
 
     [SerializeField] CinemachineVirtualCamera gameplayCamera;
     public PlayableDirector cameraTransitionTimeline;
@@ -27,6 +29,8 @@ public class GameManager : MonoBehaviour
     public bool dialogueOpen;
     public bool shopOpen;
     public CinemachineVirtualCamera shopVirtualCam;
+    public CinemachineVirtualCamera bossManVirtualCamera;
+    public DialogueTrigger bossManDialogueTrigger;
     public DialogueTrigger shopDialogueTrigger;
 
     public GameObject playerInfoUI;
@@ -41,6 +45,11 @@ public class GameManager : MonoBehaviour
     public GameObject player;
     public GameObject returnToTownPosition;
     public PlayableDirector backInTownTimeline;
+    [Header("Highscore Jail Timeline")]
+    public PlayableDirector highScoreTransitionTimeline;
+    public GameObject jailPosition;
+    public Text highScoreJailText;
+    public GameObject highScoreUI;
 
     [Header("Gameplay UI")]
     public GameObject gameOverUI;
@@ -68,7 +77,6 @@ public class GameManager : MonoBehaviour
     public PlayerController playerControllerScript;
     public MainCamera mainCameraScript;
     public TitleScreen titleScreenScript; //Only used to update player UI when "Return to town" is clicked, and add total jailtime
-    
 
     [Header("Player Card UI")]
     public Text characterTypeCardUI;
@@ -82,7 +90,7 @@ public class GameManager : MonoBehaviour
     public Animator musicSourceAnimator;
     public AudioSource cityAmbiance;
 
-
+    private bool alreadyOver = false;
 
 
     void Start()
@@ -121,7 +129,6 @@ public class GameManager : MonoBehaviour
 
             titleScreenScript.playerScript.jailTime++;
 
-
         }
 
 
@@ -138,8 +145,10 @@ public class GameManager : MonoBehaviour
             
         }
 
-        if (gameOver)
+        if (gameOver && !alreadyOver)
         {
+            
+            alreadyOver = true;
             gameOverUI.SetActive(true);
             Cursor.lockState = CursorLockMode.None;
             Cursor.visible = true;
@@ -167,6 +176,7 @@ public class GameManager : MonoBehaviour
 
     public void RestartGame()
     {
+        alreadyOver = false;
         //Reset player stats
         score = 0;
         totalCurrentCash = 0;
@@ -268,8 +278,17 @@ public class GameManager : MonoBehaviour
         multiplierUI.SetActive(false);
         backToTownButton.gameObject.SetActive(false);
 
+        if(achievedHighScore == false)
+        {
+            StartCoroutine("PoliceStationTimeline");
 
-        StartCoroutine("PoliceStationTimeline");
+        }
+        else
+        {
+            achievedHighScore = false;
+            StartCoroutine(JailTimeline());
+
+        }
 
 
 
@@ -280,9 +299,10 @@ public class GameManager : MonoBehaviour
     {
 
         cameraTransitionTimeline.Play();
-        
+
+
         yield return new WaitForSeconds(1.5f);  //Amount of time it takes for camera to go complete black
-        
+        highScoreTransitionTimeline.Stop();
         RestartGame();  //Reset the map after camera goes completely dark
 
 
@@ -310,6 +330,23 @@ public class GameManager : MonoBehaviour
 
     }
 
+    IEnumerator JailTimeline()
+    {
+        cameraTransitionTimeline.Play();
+        Cursor.lockState = CursorLockMode.None;
+        Cursor.visible = true;
+        yield return new WaitForSeconds(1.5f);  //Amount of time it takes for camera to go complete black
+        highScoreUI.SetActive(true);
+        highScoreTransitionTimeline.Play();
+
+        playerControllerScript.transform.position = new Vector3(jailPosition.transform.position.x, jailPosition.transform.position.y, jailPosition.transform.position.z);
+        playerControllerScript.transform.rotation = Quaternion.Euler(jailPosition.transform.rotation.x, jailPosition.transform.rotation.y, jailPosition.transform.rotation.z);
+
+
+
+
+    }
+
 
     //Update Open-world Player UI
     public void UpdatePlayerUI(Player playerScript)
@@ -333,6 +370,8 @@ public class GameManager : MonoBehaviour
         characterNetworthCardUI.text = "$ " + playerScript.networth.ToString();
         characterJailTimeCardUI.text = playerScript.jailTime.ToString();
 
+        // Jail UI
+        highScoreJailText.text = playerScript.highScore.ToString();
 
 
     }
@@ -341,5 +380,15 @@ public class GameManager : MonoBehaviour
     {
         shopOpen = false;
         
+    }
+
+
+    public void MoveOnFromHighScore()
+    {
+        highScoreUI.SetActive(false);
+
+        cameraTransitionTimeline.Stop();
+
+        BackToTown();
     }
 }

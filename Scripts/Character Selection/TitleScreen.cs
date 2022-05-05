@@ -69,7 +69,6 @@ public class TitleScreen : MonoBehaviour
 
     public GameObject playerCardButtons;
 
-    public GameObject inputField;
 
     //public Button acceptCharacterBtn;
     //public Button declineCharacterBtn;
@@ -99,18 +98,15 @@ public class TitleScreen : MonoBehaviour
     //public Button loadBtn;
     public Button saveBtn;
 
-    public GameObject loadButton;
-    public GameObject saveButton;
-
-
-    
-    
-    
-    
-
+    //public GameObject loadButton;
+    //public GameObject saveButton;
 
     private float timeLeft = 0.5f;
     public int count = 0;
+
+    [Header("Leaderboard Functionality")]
+    public GameObject leaderBoardCanvas;
+    public GameObject settingsMenu;
 
     void Start()
     {
@@ -126,7 +122,7 @@ public class TitleScreen : MonoBehaviour
     void Update()
     {
 
-      
+        OpenSettings();
 
         //If beginDialgue (The gameobject acting as my trigger in the timelines) activates, start dialogue
         if (beginDialogue.activeSelf && timeLeft <= 0.0f)
@@ -191,7 +187,7 @@ public class TitleScreen : MonoBehaviour
         nameInput = name;
         nameUI.text = nameInput;
         cardNameUI.text = nameInput;
-
+        AuthManager.userName = name;
         Debug.Log("Player name is " + name);
     }
 
@@ -215,7 +211,6 @@ public class TitleScreen : MonoBehaviour
         //Enable open-world UI
         gameManagerScript.playerInfoUI.SetActive(true);
         gameManagerScript.playerInfoUI.GetComponent<Animator>().SetBool("Open_b", true);
-        inputField.SetActive(false);
         characterDescriptionBoxAnimator.SetBool("Is_Open", false);
         characterSelectUIAnimator.SetBool("Is_Open", false);
         playerCardButtons.SetActive(false);
@@ -276,6 +271,51 @@ public class TitleScreen : MonoBehaviour
         playerCardUI.SetActive(false);
     }
 
+    public void DisplayLeaderboard()
+    {
+        
+        leaderBoardCanvas.SetActive(true);
+
+    }
+
+    public void CloseLeaderBoard()
+    {
+        leaderBoardCanvas.SetActive(false);
+    }
+
+    public void QuitGame()
+    {
+        Application.Quit();
+    }
+
+    public void CloseSettings()
+    {
+        gameManagerScript.isMenuOpen = false;
+        settingsMenu.SetActive(false);
+
+    }
+
+    public void OpenSettings()
+    {
+        if (Input.GetKeyDown(KeyCode.Escape))
+        {
+            if (settingsMenu.activeInHierarchy)
+            {
+                //Disable Normal Player Controls
+                gameManagerScript.isMenuOpen = false;
+                settingsMenu.SetActive(false);
+
+            }
+            else
+            {
+                gameManagerScript.isMenuOpen = true;
+                settingsMenu.SetActive(true);
+
+            }
+
+        }
+
+    }
 
     public void TitleScreenLoadData()
     {

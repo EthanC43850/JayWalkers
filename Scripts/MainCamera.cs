@@ -24,7 +24,7 @@ public class MainCamera : MonoBehaviour
     private GameManager gameManagerScript;
     public PlayerController playerControllerScript;
 
-    private bool elevation;
+    public bool elevation;
     //private bool decline;
     private bool slowCameraTransition;
     //private float clock = 0.0f;

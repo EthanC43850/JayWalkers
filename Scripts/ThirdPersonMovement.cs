@@ -32,9 +32,14 @@ public class ThirdPersonMovement : MonoBehaviour
     public LayerMask fireStationEntrance;
     public LayerMask fireStationExit;
     public LayerMask brokenPlane;
+    public LayerMask bossMan;
     public GameObject planeCrashTimeline;
     public ParticleSystem planeSmokeFx;
     private bool playedBefore = false;
+
+    
+
+
 
     [SerializeField] Transform downStairs;
     [SerializeField] Transform upstairs;
@@ -49,15 +54,39 @@ public class ThirdPersonMovement : MonoBehaviour
     {
         Cursor.visible = false;
         Cursor.lockState = CursorLockMode.Locked;
+        Debug.Log("LOCKED");
         //playerAnim.SetBool("Static_b", true);
     }
 
     void Update()
     {
+        if(gameManagerScript.isMenuOpen == true)
+        {
+            freeLookScript.SetActive(false);
+            Cursor.lockState = CursorLockMode.None;
+            Cursor.visible = true;
+        }
+        else
+        {
+
+            freeLookScript.SetActive(true);
+            Cursor.lockState = CursorLockMode.Locked;
+            Cursor.visible = false;
+        }
+
         #region Third Person movement
         float horizontal = Input.GetAxisRaw("Horizontal");
         float vertical = Input.GetAxisRaw("Vertical");
-        Vector3 direction = new Vector3(horizontal, 0f, vertical).normalized;
+        Vector3 direction;
+        if (gameManagerScript.isMenuOpen == false)
+        {
+            direction = new Vector3(horizontal, 0f, vertical).normalized;
+
+        }
+        else
+        {
+            direction = Vector3.zero;
+        }
 
 
 
@@ -99,6 +128,9 @@ public class ThirdPersonMovement : MonoBehaviour
         {
             playerID.SetActive(false);
             displayCard = false;
+            gameManagerScript.isMenuOpen = false;
+            freeLookScript.SetActive(false);
+
             Cursor.lockState = CursorLockMode.Locked;
             Cursor.visible = false;
         }
@@ -106,10 +138,13 @@ public class ThirdPersonMovement : MonoBehaviour
         {
             playerID.SetActive(true);
             displayCard = true;
+            gameManagerScript.isMenuOpen = true;
+            freeLookScript.SetActive(true);
             Cursor.lockState = CursorLockMode.None;
             Cursor.visible = true;
         }
 
+        
 
         //Check if player is near merchant NPC
         Debug.DrawRay(lookPos.transform.position, transform.TransformDirection(Vector3.forward)* 1.5f, Color.red, 0.1f);
@@ -134,6 +169,7 @@ public class ThirdPersonMovement : MonoBehaviour
                 gameManagerScript.shopDialogueTrigger.TriggerDialogue();
 
                 //Disable Normal Player Controls
+                gameManagerScript.isMenuOpen = true;
                 freeLookScript.SetActive(false);
                 Cursor.lockState = CursorLockMode.None;
                 Cursor.visible = true;
@@ -151,6 +187,7 @@ public class ThirdPersonMovement : MonoBehaviour
             if(gameManagerScript.dialogueOpen == false && gameManagerScript.shopOpen == false) //Close shop
             {
                 shopUI.SetActive(false);
+                gameManagerScript.isMenuOpen = false;
                 freeLookScript.SetActive(true);
                 Cursor.lockState = CursorLockMode.Locked;
                 Cursor.visible = false;
@@ -189,6 +226,33 @@ public class ThirdPersonMovement : MonoBehaviour
         {
             interactUI.SetActive(false);
         }
+
+        if (Physics.Raycast(lookPos.transform.position, transform.TransformDirection(Vector3.forward), out hit, 1.5f, bossMan))
+        {
+            interactUI.SetActive(true);
+
+            if (Input.GetKeyDown(KeyCode.E))
+            {
+                //Must call functions from gamemanager because there are 4 different characters
+                gameManagerScript.dialogueOpen = true;
+                gameManagerScript.bossManVirtualCamera.Priority = 25;
+                gameManagerScript.bossManDialogueTrigger.TriggerDialogue();
+
+                //Disable Normal Player Controls
+                gameManagerScript.isMenuOpen = true;
+                Cursor.lockState = CursorLockMode.None;
+                Cursor.visible = true;
+                freeLookScript.SetActive(false);
+            }
+
+            if (gameManagerScript.dialogueOpen == false)
+            {
+                gameManagerScript.isMenuOpen = false;
+                freeLookScript.SetActive(true);
+                gameManagerScript.bossManVirtualCamera.Priority = 5;
+            }
+        }
+
     }
 
     IEnumerator TeleportUpstairs()
@@ -205,6 +269,41 @@ public class ThirdPersonMovement : MonoBehaviour
 
     }
 
+    public void CloseSettings()
+    {
+        //Disable Normal Player Controls
+        gameManagerScript.isMenuOpen = false;
+        Cursor.lockState = CursorLockMode.Locked;
+        Cursor.visible = false;
+        gameManagerScript.titleScreenScript.settingsMenu.SetActive(false);
+    }
+
+    public void OpenSettings()
+    {
+        if (Input.GetKeyDown(KeyCode.Escape))
+        {
+            if (gameManagerScript.titleScreenScript.settingsMenu.activeInHierarchy)
+            {
+                //Enable Normal Player Controls
+                Cursor.lockState = CursorLockMode.Locked;
+                Cursor.visible = false;
+                gameManagerScript.isMenuOpen = false;
+
+                gameManagerScript.titleScreenScript.settingsMenu.SetActive(false);
+
+            }
+            else
+            {
+                //Disable Normal Player Controls
+                Cursor.lockState = CursorLockMode.None;
+                Cursor.visible = true;
+                gameManagerScript.titleScreenScript.settingsMenu.SetActive(true);
+
+            }
+
+        }
+
+    }
 
 
     private void OnTriggerEnter(Collider other)

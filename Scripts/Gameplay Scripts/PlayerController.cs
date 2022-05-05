@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 using TMPro;
+using UnityEngine.UI;
 
 public class PlayerController : MonoBehaviour
 {
@@ -11,6 +12,7 @@ public class PlayerController : MonoBehaviour
     private PlatformSpawner platformSpawnerScript;
     private GameManager gameManagerScript;
     public Player playerScript;
+    public AuthManager authManagerScript;
 
     [Header("Player Controls:")]
     public float speed;
@@ -96,6 +98,8 @@ public class PlayerController : MonoBehaviour
     //public AudioClip coinSound;
     //public AudioClip Soda;
 
+    
+
 
     void Start()
     {
@@ -145,6 +149,9 @@ public class PlayerController : MonoBehaviour
             miniTank.SetActive(false);
             plane.SetActive(false);
             playerMesh.SetActive(true);
+            mainCameraScript.elevation = false;
+            gameManagerScript.musicSource.Play();
+
         }
     }
 
@@ -288,7 +295,7 @@ public class PlayerController : MonoBehaviour
 
     private void OnCollisionEnter(Collision collision)
     {
-        if (collision.gameObject.CompareTag("Obstacle") && !tankPowerup && !planePowerup)
+        if (collision.gameObject.CompareTag("Obstacle") && !tankPowerup && !planePowerup && gameManagerScript.gameOver == false)
         {
             GameOver();
             Physics.IgnoreCollision(collision.gameObject.GetComponent<Collider>(), playerCollider);
@@ -452,6 +459,9 @@ public class PlayerController : MonoBehaviour
         if(gameManagerScript.score > playerScript.highScore)
         {
             playerScript.highScore = gameManagerScript.score;
+            authManagerScript.SaveHighScoreData(gameManagerScript.score);
+            // Activate high score timeline
+            gameManagerScript.achievedHighScore = true;
         }
 
 
@@ -470,7 +480,7 @@ public class PlayerController : MonoBehaviour
             platformSpawnerScript.SpawnPlatform();  //causes the next platform to spawn
             Destroy(other.transform.parent.gameObject, 1.0f);  // Call a function that destroys platform and objects
             
-    }
+        }
 
 
         #region Test Trigger Collision
