@@ -49,7 +49,7 @@ public class Player : MonoBehaviour
     {
 
         gameManagerScript = GameObject.Find("Game Manager").GetComponent<GameManager>();
-        titleScreenScript = GameObject.Find("TitleScreen").GetComponent<TitleScreen>();
+        titleScreenScript = FindObjectOfType<TitleScreen>();
     }
 
     //Create update function that saves player data every 10 seconds or whenever something is bought, or whenever a run is finished

@@ -18,7 +18,7 @@ public class GameManager : MonoBehaviour
     public bool achievedHighScore = false;
     public bool isMenuOpen;
 
-    [SerializeField] CinemachineVirtualCamera gameplayCamera;
+    public CinemachineVirtualCamera gameplayCamera;
     public PlayableDirector cameraTransitionTimeline;
 
     [Header("Main Menu")]
@@ -89,6 +89,7 @@ public class GameManager : MonoBehaviour
     public AudioSource musicSource;
     public Animator musicSourceAnimator;
     public AudioSource cityAmbiance;
+    public AudioSource cityMenuMusic;
 
     private bool alreadyOver = false;
 
@@ -106,8 +107,8 @@ public class GameManager : MonoBehaviour
     void Update()
     {
         
-
-        if (Input.GetKeyDown(KeyCode.P))
+        // Test start game
+        /*if (Input.GetKeyDown(KeyCode.P))
         {
             playerInfoUI.GetComponent<Animator>().SetBool("Open_b", false);
 
@@ -125,11 +126,12 @@ public class GameManager : MonoBehaviour
 
             musicSource.Play();
             cityAmbiance.volume = 0.2f;
+            cityMenuMusic.volume = 0f;
 
 
             titleScreenScript.playerScript.jailTime++;
 
-        }
+        }*/
 
 
 
@@ -322,6 +324,7 @@ public class GameManager : MonoBehaviour
         playerInfoUI.GetComponent<Animator>().SetBool("Open_b", true);
 
         cityAmbiance.volume = 0.9f;
+        cityMenuMusic.volume = 0.9f;
 
         //Enable open-world controls
         player.GetComponent<CharacterController>().enabled = enabled;
