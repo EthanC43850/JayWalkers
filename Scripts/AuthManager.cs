@@ -178,6 +178,13 @@ public class AuthManager : MonoBehaviour
         }
     }
 
+    public void SkipLoginScreen()
+    {
+        titleScreenUI.SetActive(true);
+        loginScreenUI.SetActive(false);
+    }
+
+
     private IEnumerator Register(string _email, string _password, string _username)
     {
         if (_username == "")
@@ -378,12 +385,16 @@ public class AuthManager : MonoBehaviour
                 {
                     authUIManagerScript.SetLeaderboardUltimateJaywalker(username, scores);
                 }
-                else
+                else if(numberOfPlayers < 8)
                 {
                     //Instantiate new scoreboard elements
                     GameObject scoreboardElement = Instantiate(scoreElement, scoreboardContent);
                     Debug.Log("INSTANTIATED SECOND PLACE");
                     scoreboardElement.GetComponent<ScoreboardElement>().NewScoreElement(username, scores);
+                }
+                else
+                {
+                    break;
                 }
                 
                 numberOfPlayers++;

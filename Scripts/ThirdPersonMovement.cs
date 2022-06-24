@@ -3,8 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Playables;
 using Cinemachine;
-
-
+using UnityEngine.UI;
 
 public class ThirdPersonMovement : MonoBehaviour
 {
@@ -13,6 +12,13 @@ public class ThirdPersonMovement : MonoBehaviour
     public GameObject cam;
     public GameObject lookPos;
 
+    [Header("End Game objects")]
+    public Text hintsUI_text;
+    public bool finishedGame_b;
+    public GameObject oldbossColliderObject;
+    public GameObject bossFinalConversationCollider;
+    public GameObject endGamePlaneCollider;
+    public GameObject oldPlaneCollider;
 
     public GameObject interactUI;
 
@@ -27,17 +33,21 @@ public class ThirdPersonMovement : MonoBehaviour
     public LayerMask storeLayer;
     public GameObject shopUI;
     public DialogueTrigger shopDialogueTrigger;
+    public GameObject shopPlaneCard;
 
     [Header("Firestation")]
     public LayerMask fireStationEntrance;
     public LayerMask fireStationExit;
     public LayerMask brokenPlane;
     public LayerMask bossMan;
+    public LayerMask bossManLastConversation;
+    public LayerMask endGameCutscene;
     public GameObject planeCrashTimeline;
     public ParticleSystem planeSmokeFx;
     private bool playedBefore = false;
-
     
+
+
 
 
 
@@ -60,7 +70,12 @@ public class ThirdPersonMovement : MonoBehaviour
 
     void Update()
     {
-        if(gameManagerScript.isMenuOpen == true)
+
+        CheckEndGame();
+
+        OpenSettings();
+
+        if (gameManagerScript.isMenuOpen == true)
         {
             freeLookScript.SetActive(false);
             Cursor.lockState = CursorLockMode.None;
@@ -97,14 +112,14 @@ public class ThirdPersonMovement : MonoBehaviour
                 playerAnim.SetBool("Running_b", true);
                 playerAnim.SetBool("Walk_b", false);
 
-                speed = 1000;
+                speed = 20;
             }
             else
             {
                 playerAnim.SetBool("Walk_b", true);
                 playerAnim.SetBool("Running_b", false);
 
-                speed = 500;
+                speed = 10;
 
             }
 
@@ -113,7 +128,7 @@ public class ThirdPersonMovement : MonoBehaviour
             transform.rotation = Quaternion.Euler(0f, angle, 0f);
 
             Vector3 moveDirection = Quaternion.Euler(0f, lookDirection, 0f) * Vector3.forward;
-            controller.SimpleMove(moveDirection.normalized * speed * Time.deltaTime);
+            controller.SimpleMove(moveDirection.normalized * speed );
         }
         else if (direction.magnitude <= 0.1)
         {
@@ -124,7 +139,7 @@ public class ThirdPersonMovement : MonoBehaviour
 
 
         //Allow player to open and close ID Card
-        if (Input.GetKeyDown(KeyCode.C) && displayCard)
+        if (Input.GetKeyDown(KeyCode.C) && displayCard && gameManagerScript.insideTown)
         {
             playerID.SetActive(false);
             displayCard = false;
@@ -134,7 +149,7 @@ public class ThirdPersonMovement : MonoBehaviour
             Cursor.lockState = CursorLockMode.Locked;
             Cursor.visible = false;
         }
-        else if(Input.GetKeyDown(KeyCode.C) && !displayCard)
+        else if(Input.GetKeyDown(KeyCode.C) && displayCard == false && gameManagerScript.insideTown)
         {
             playerID.SetActive(true);
             displayCard = true;
@@ -160,7 +175,7 @@ public class ThirdPersonMovement : MonoBehaviour
                 interactUI.SetActive(true);
             }
 
-            if (Input.GetKeyDown(KeyCode.E))
+            if (Input.GetKeyDown(KeyCode.E)&& gameManagerScript.shopOpen == false)
             {
                 //Must call functions from gamemanager because there are 4 different characters
                 gameManagerScript.shopOpen = true;  
@@ -220,12 +235,39 @@ public class ThirdPersonMovement : MonoBehaviour
             if (Input.GetKeyDown(KeyCode.E))
             {
                 planeSmokeFx.Stop();
+                shopPlaneCard.SetActive(true);
+                gameManagerScript.titleScreenScript.playerScript.planeUnlocked_b = true;
+            }
+        }
+        else if (Physics.Raycast(lookPos.transform.position, transform.TransformDirection(Vector3.forward), out hit, 1.5f, endGameCutscene))
+        {
+            interactUI.SetActive(true);
+            if (Input.GetKeyDown(KeyCode.E))
+            {
+                hintsUI_text.text = "Unlocked New plane powerup in the shop!";
+
+                gameManagerScript.playerInfoUI.SetActive(false);
+                interactUI.SetActive(false);
+                // Unlock plane
+                planeSmokeFx.Stop();
+                shopPlaneCard.SetActive(true);
+                gameManagerScript.titleScreenScript.playerScript.planeUnlocked_b = true;
+
+                oldPlaneCollider.SetActive(false);
+                endGamePlaneCollider.SetActive(false);
+
+                StartCoroutine(EndGameTimeLine());
+                
+
             }
         }
         else
         {
             interactUI.SetActive(false);
         }
+
+       
+
 
         if (Physics.Raycast(lookPos.transform.position, transform.TransformDirection(Vector3.forward), out hit, 1.5f, bossMan))
         {
@@ -237,6 +279,7 @@ public class ThirdPersonMovement : MonoBehaviour
                 gameManagerScript.dialogueOpen = true;
                 gameManagerScript.bossManVirtualCamera.Priority = 25;
                 gameManagerScript.bossManDialogueTrigger.TriggerDialogue();
+
 
                 //Disable Normal Player Controls
                 gameManagerScript.isMenuOpen = true;
@@ -253,7 +296,87 @@ public class ThirdPersonMovement : MonoBehaviour
             }
         }
 
+
+        if (Physics.Raycast(lookPos.transform.position, transform.TransformDirection(Vector3.forward), out hit, 1.5f, bossManLastConversation))
+        {
+            interactUI.SetActive(true);
+
+            if (Input.GetKeyDown(KeyCode.E))
+            {
+                
+                //Must call functions from gamemanager because there are 4 different characters
+                gameManagerScript.dialogueOpen = true;
+                gameManagerScript.bossManVirtualCamera.Priority = 25;
+                gameManagerScript.bossManLastConversationTrigger.TriggerDialogue();
+
+
+                //Disable Normal Player Controls
+                gameManagerScript.isMenuOpen = true;
+                Cursor.lockState = CursorLockMode.None;
+                Cursor.visible = true;
+                freeLookScript.SetActive(false);
+            }
+
+            if (gameManagerScript.dialogueOpen == false)
+            {
+                gameManagerScript.isMenuOpen = false;
+                freeLookScript.SetActive(true);
+                gameManagerScript.bossManVirtualCamera.Priority = 5;
+            }
+        }
+
+
+        
+        
+
+
+
     }
+
+    IEnumerator EndGameTimeLine()
+    {
+
+        gameManagerScript.cameraTransitionTimeline.Play();
+
+
+        yield return new WaitForSeconds(1.5f);  //Amount of time it takes for camera to go complete black
+
+        gameManagerScript.endgameCutsceneTimeline.Play();
+
+
+    }
+
+
+    public void CheckEndGame()
+    {
+        if(gameManagerScript.playerControllerScript.soundTrack1_Progress >= gameManagerScript.titleScreenScript.shopUIScript.soundTrack1_completionValue && finishedGame_b == false)
+        {
+            if(gameManagerScript.playerControllerScript.soundTrack2_Progress >= gameManagerScript.titleScreenScript.shopUIScript.soundTrack2_completionValue)
+            {
+                if(gameManagerScript.playerControllerScript.soundTrack3_Progress >= gameManagerScript.titleScreenScript.shopUIScript.soundTrack3_completionValue)
+                {
+                    oldbossColliderObject.SetActive(false);
+                    bossFinalConversationCollider.SetActive(true);
+                    oldPlaneCollider.SetActive(false);
+                    endGamePlaneCollider.SetActive(true);
+                    finishedGame_b = true;
+                    //gameManagerScript.playerInfoUI.SetActive(false);
+
+
+                }
+
+
+
+            }
+
+
+
+        }
+
+
+    }
+
+
 
     IEnumerator TeleportUpstairs()
     {
@@ -280,8 +403,9 @@ public class ThirdPersonMovement : MonoBehaviour
 
     public void OpenSettings()
     {
-        if (Input.GetKeyDown(KeyCode.Escape))
+        if (Input.GetKeyDown(KeyCode.Escape) && gameManagerScript.shopOpen == false && gameManagerScript.insideTown == true && gameManagerScript.player != null)
         {
+            gameManagerScript.save_text.text = "Save Game";
             if (gameManagerScript.titleScreenScript.settingsMenu.activeInHierarchy)
             {
                 //Enable Normal Player Controls
@@ -290,6 +414,7 @@ public class ThirdPersonMovement : MonoBehaviour
                 gameManagerScript.isMenuOpen = false;
 
                 gameManagerScript.titleScreenScript.settingsMenu.SetActive(false);
+                gameManagerScript.playerControllerScript.playerScript.SavePlayer(); // Game saves whenever escape is pressed
 
             }
             else
@@ -297,6 +422,8 @@ public class ThirdPersonMovement : MonoBehaviour
                 //Disable Normal Player Controls
                 Cursor.lockState = CursorLockMode.None;
                 Cursor.visible = true;
+                gameManagerScript.isMenuOpen = true;
+
                 gameManagerScript.titleScreenScript.settingsMenu.SetActive(true);
 
             }

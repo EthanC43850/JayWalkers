@@ -20,17 +20,20 @@ public class GameManager : MonoBehaviour
 
     public CinemachineVirtualCamera gameplayCamera;
     public PlayableDirector cameraTransitionTimeline;
+    public PlayableDirector endgameCutsceneTimeline;
 
     [Header("Main Menu")]
     public GameObject titleScreenUI;
     public GameObject pressButtonText;
 
     [Header("Player In-Town UI")]
+    public Text save_text;
     public bool dialogueOpen;
     public bool shopOpen;
     public CinemachineVirtualCamera shopVirtualCam;
     public CinemachineVirtualCamera bossManVirtualCamera;
     public DialogueTrigger bossManDialogueTrigger;
+    public DialogueTrigger bossManLastConversationTrigger;
     public DialogueTrigger shopDialogueTrigger;
 
     public GameObject playerInfoUI;
@@ -54,6 +57,7 @@ public class GameManager : MonoBehaviour
     [Header("Gameplay UI")]
     public GameObject gameOverUI;
     public Button backToTownButton;
+    public GameObject restartGameBtn;
     public TextMeshProUGUI drinkCount;
     public TextMeshProUGUI cashCountText;
     public Animator energyDrinkAnim;
@@ -64,6 +68,7 @@ public class GameManager : MonoBehaviour
     public GameObject cashUI;
     public GameObject coinMeterUI;
     public GameObject multiplierUI;
+    public GameObject energyMeterUI;
     public TextMeshProUGUI scoreText;
 
 
@@ -92,6 +97,36 @@ public class GameManager : MonoBehaviour
     public AudioSource cityMenuMusic;
 
     private bool alreadyOver = false;
+
+    [Header("Starting horizontal platforms")]
+    public Platform[] horizontalplatform1;
+    public GameObject endGameButtonOptionsUI;
+
+
+    public void StartHorizontalPlatformSpawn()
+    {
+        foreach(Platform platform in horizontalplatform1)
+        {
+
+            platform.spaceTaken = false;
+
+        }
+    }
+
+    public void StopCreditsTimeline()
+    {
+        endGameButtonOptionsUI.SetActive(false);
+        endgameCutsceneTimeline.Stop();
+        isMenuOpen = false;
+
+    }
+
+    public void SavePlayer()
+    {
+        titleScreenScript.playerScript.SavePlayer();
+        save_text.text = "SAVED!";
+    }
+
 
 
     void Start()
@@ -143,6 +178,7 @@ public class GameManager : MonoBehaviour
             cashUI.SetActive(true);
             coinMeterUI.SetActive(true);
             multiplierUI.SetActive(true);
+            energyMeterUI.SetActive(true);
             //musicSourceAnimator.SetInteger("Volume Level", 10); //fades in music
             
         }
@@ -168,20 +204,57 @@ public class GameManager : MonoBehaviour
 
     private void FixedUpdate()  //Make sure to place score counter in fixed update to keep accuracy across multiple devices
     {
-        if (!gameOver && !insideTown)
+        if (!gameOver && !insideTown && !playerControllerScript.planePowerup && !playerControllerScript.tankPowerup && !playerControllerScript.balloonPowerup)
         {
             UpdateScore(1);
             gameOverUI.SetActive(false);
         }
+        else if(!gameOver && !insideTown && (playerControllerScript.balloonPowerup))
+        {
+            UpdateScore(2);
+            gameOverUI.SetActive(false);
+        }
+        else if(!gameOver && !insideTown && (playerControllerScript.tankPowerup)){
+            UpdateScore(3);
+            gameOverUI.SetActive(false);
+        }
+        else if(!gameOver && !insideTown && (playerControllerScript.planePowerup))
+        {
+            UpdateScore(4);
+            gameOverUI.SetActive(false);
+        }
     }
 
+    public void PlayMusicOnRestart()
+    {
+        musicSource.Play();
+
+    }
 
     public void RestartGame()
     {
+        playerControllerScript.playerRb.useGravity = true;
+        playerControllerScript.planePowerupTimeLeft = 0;
+        playerControllerScript.tankPowerup = false;
+        playerControllerScript.planePowerup = false;
+        playerControllerScript.powerupSmoke.Play();
+        playerControllerScript.miniTank.SetActive(false);
+        playerControllerScript.plane.SetActive(false);
+        playerControllerScript.playerMesh.SetActive(true);
+        mainCameraScript.elevation = false;
+
+        Cursor.lockState = CursorLockMode.Locked;
+        Cursor.visible = false;
+        /////////////////
+        mainCameraScript.elevation = false;
+        mainCameraScript.cameraOffset = new Vector3(19.3f, 13.8f, 0.0f); // default cam pos
+
         alreadyOver = false;
         //Reset player stats
+        playerControllerScript.energyEnduranceDuration = playerControllerScript.energyEnduranceTime + (titleScreenScript.playerScript.enduranceUpgradeLevel * 2.5f);
         score = 0;
         totalCurrentCash = 0;
+        coinMeter.currentCoinSliderCount = 0;
         UpdateCashCount(0);
         totalDrinks = 0;
         UpdateDrinkCount(0);
@@ -200,10 +273,14 @@ public class GameManager : MonoBehaviour
 
 
         var platformClones = GameObject.FindGameObjectsWithTag("Platform");
+        var cityPlatformClones = GameObject.FindGameObjectsWithTag("CityPlatform");
         var elevatedPlatformClones = GameObject.FindGameObjectsWithTag("ElevatedPlatform");
         var obstacleClones = GameObject.FindGameObjectsWithTag("Obstacle");
         var cashClones = GameObject.FindGameObjectsWithTag("Money");
         var van_TreePlanks_Clones = GameObject.FindGameObjectsWithTag("Van_TreePlanks");
+        var sodaCans = GameObject.FindGameObjectsWithTag("Power Drink");
+        var powerups = GameObject.FindGameObjectsWithTag("SpawnRandomPowerupPrefab");
+
         foreach (var platformClone in platformClones)
         {
             Destroy(platformClone);
@@ -224,12 +301,30 @@ public class GameManager : MonoBehaviour
         {
             Destroy(van_TreePlank);
         }
+        foreach(var can in sodaCans)
+        {
+            Destroy(can);
+        }
+        foreach(var powerup in powerups)
+        {
+            Destroy(powerup);
+        }
+        foreach(var city in cityPlatformClones)
+        {
+            Destroy(city);
+        }
+
+        StartHorizontalPlatformSpawn();
 
         platformSpawnerScript.SpawnInitialPlatforms();
     }
 
 
+    private void IncreaseSpeedOvertime()
+    {
 
+
+    }
 
     //Update in-game UI
     private void UpdateScore(int scoreToAdd)
@@ -259,12 +354,13 @@ public class GameManager : MonoBehaviour
 
     public void BackToTown()
     {
-
+        restartGameBtn.SetActive(true);
+        mainCameraScript.elevation = false;
         UpdatePlayerUI(titleScreenScript.playerScript);
 
         Cursor.lockState = CursorLockMode.Locked;
         Cursor.visible = false;
-        
+        playerInfoUI.SetActive(true);
 
         gameStart = false;
         gameOver = false;   
@@ -278,6 +374,7 @@ public class GameManager : MonoBehaviour
         cashUI.SetActive(false);
         coinMeterUI.SetActive(false);
         multiplierUI.SetActive(false);
+        energyMeterUI.SetActive(false);
         backToTownButton.gameObject.SetActive(false);
 
         if(achievedHighScore == false)
@@ -294,6 +391,12 @@ public class GameManager : MonoBehaviour
 
 
 
+    }
+
+    public void enableMouseCursor()
+    {
+        Cursor.lockState = CursorLockMode.None;
+        Cursor.visible = true;
     }
 
 

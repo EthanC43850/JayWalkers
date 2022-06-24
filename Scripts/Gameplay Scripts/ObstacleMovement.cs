@@ -68,7 +68,25 @@ public class ObstacleMovement : MonoBehaviour
         else   //Disregard the lanes when vehicles move horizontally
         {
 
+            Vector3 origin = transform.position + Vector3.up * 2.0f;
+            Vector3 direction = transform.TransformDirection(Vector3.back);
+            isVehicleBehind = Physics.Raycast(origin, direction, rayCastLength, vehicleMask);
+            Debug.DrawRay(transform.position + Vector3.up * 2.0f, transform.TransformDirection(Vector3.back) * rayCastLength, Color.blue);
+
             transform.Translate(Vector3.forward * Time.deltaTime * speed);
+
+            //If a fast car comes up behind a slow vehicle it will honk and make the vehicle in front go faster
+            if (Physics.Raycast(origin, direction, out hit, rayCastLength, vehicleMask) && gameManagerScript.gameOver != true)
+            {
+                speed = hit.collider.gameObject.GetComponentInParent<ObstacleMovement>().speed;
+                //Debug.Log("BEEP BEEP!");
+            }
+            else if (Physics.Raycast(origin, direction, out hit, rayCastLength, vehicleMask) && gameManagerScript.gameOver == true)//If game over is true then faster cars should slow down to the speed of the car in front of it to prevent crashing
+            {
+                hit.collider.gameObject.GetComponentInParent<ObstacleMovement>().speed = speed;
+                //hit.collider.gameObject.GetComponentInParent<ObstacleMovement>().wheelSpinSpeed = 0;
+
+            }
 
         }
 

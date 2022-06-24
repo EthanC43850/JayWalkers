@@ -13,6 +13,7 @@ public class ActivateFastVehicleSpawn : MonoBehaviour
         if (platformScript.horizontalObstacles)
         {
             platformScript.startSpawning = true;
+            platformScript.StopAllCoroutines();
             platformScript.StartCoroutine("SpawnFastMovingVehicles");
         }
     }
@@ -20,7 +21,14 @@ public class ActivateFastVehicleSpawn : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        
+        //debug code
+        /*if (Input.GetKeyDown(KeyCode.U))
+        {
+            if(platformScript.foreverSpawnObstacles == true)
+            {
+                platformScript.StopAllCoroutines();
+            }
+        }*/
 
 
 

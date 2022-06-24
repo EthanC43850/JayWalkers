@@ -10,6 +10,7 @@ public class Platform : MonoBehaviour
     GameManager gameManagerScript;
     public int randNum = 0;
     public bool horizontalObstacles;
+    public bool foreverSpawnObstacles;
     public bool spaceTaken;
     public bool startSpawning;
     public GameObject[] obstacleArray;
@@ -63,6 +64,7 @@ public class Platform : MonoBehaviour
 
     void SpawnObstacles()
     {
+        if(obstacleArray.Length == 0) { return; }
             obstacleIndex = Random.Range(0, obstacleArray.Length-1);
             //Debug.Log("Obstacle index number is " + obstacleIndex);
             Instantiate(obstacleArray[obstacleIndex], staticObstacleSpawnPoint.transform.position, Quaternion.identity);
@@ -71,6 +73,10 @@ public class Platform : MonoBehaviour
 
     IEnumerator SpawnSlowMovingVehicles()
     {
+        if(foreverSpawnObstacles == true)
+        {
+            Debug.Log("ACTIVED SLOW MOVING VEHICLESCOROUTINE");
+        }
         while (startSpawning == true)
         {
             obstacleIndex = Random.Range(0, slowMovingObstacleArray.Length);
@@ -89,6 +95,11 @@ public class Platform : MonoBehaviour
     
     IEnumerator SpawnFastMovingVehicles()
     {
+        if (foreverSpawnObstacles == true)
+        {
+            Debug.Log("ACTIVED FAST VEHICLES COROUTINE");
+        }
+
         //Begin spawning when player hits trigger
         while (startSpawning == true)
         {
@@ -106,7 +117,10 @@ public class Platform : MonoBehaviour
         }
     }
 
-
+    public void StopCoroutines()
+    {
+        StopAllCoroutines();
+    }
 
 
 

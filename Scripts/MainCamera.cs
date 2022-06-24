@@ -128,6 +128,7 @@ public class MainCamera : MonoBehaviour
         elevation = false;
         //decline = false;
         cameraOffset = new Vector3(19.3f, 13.8f, 0.0f);
+        
     }
 
 

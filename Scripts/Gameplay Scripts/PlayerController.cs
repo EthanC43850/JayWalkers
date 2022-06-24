@@ -10,13 +10,14 @@ public class PlayerController : MonoBehaviour
     public PowerUpMeter powerupMeterScript;
     private MainCamera mainCameraScript;
     private PlatformSpawner platformSpawnerScript;
-    private GameManager gameManagerScript;
+    [HideInInspector]public GameManager gameManagerScript;
     public Player playerScript;
     public AuthManager authManagerScript;
 
     [Header("Player Controls:")]
     public float speed;
     public float startSpeed;
+    public float speedBeforePowerup;
     [SerializeField] LayerMask groundMask;
     public float jumpForce;
     public float longJumpForce;
@@ -37,12 +38,19 @@ public class PlayerController : MonoBehaviour
     [SerializeField] float stepHeight = 0.3f;
     [SerializeField] float stepSmooth = 2f; //The higher the step smooth is, the higher the character will jump up. The lower the step smooth, the smoother the transition*/
 
+    [Header("Player Endurance:")]
+    public float energyEnduranceTime;
+    public float energyEnduranceDuration;
+    public float energyRefillAmount = 7;
+    public GameObject sodaEndurancePowerupMeterUI;
+
     [Header("Balloon Powerup:")]
     public bool balloonPowerup;
     public float balloonPowerUpTime;
     public float balloonPowerupDuration;
     public GameObject balloonPowerupMeterUI;
     public ParticleSystem balloonDisappearFx;
+    public GameObject balloonEasterEggCollider;
 
     [Header("Tank Powerup:")]
     public bool tankPowerup;
@@ -78,10 +86,12 @@ public class PlayerController : MonoBehaviour
 
     public GameObject playerStartPos;
 
+    [Header("Progression")]
+    public int soundTrack1_Progress;
+    public int soundTrack2_Progress;
+    public int soundTrack3_Progress;
 
 
-
-    
     [Header("Player Build")]
     public Animator playerAnim;
     public Rigidbody playerRb;
@@ -95,10 +105,12 @@ public class PlayerController : MonoBehaviour
     public AudioClip slideSound;
     public AudioClip deathSound;
     public AudioClip planeSound;
+    public AudioClip coinSFX;
     //public AudioClip coinSound;
     //public AudioClip Soda;
 
-    
+    [Header("Hot patch")]
+    public GameObject[] UIElementsToDisable;
 
 
     void Start()
@@ -116,8 +128,12 @@ public class PlayerController : MonoBehaviour
         //transform.position = new Vector3(transform.position.x, transform.position.y, lanes[1].transform.position.z); //Places player in lane one
     }
 
-   
-   
+
+    private void FixedUpdate()
+    {
+
+        
+    }
 
 
     void Update()
@@ -133,26 +149,52 @@ public class PlayerController : MonoBehaviour
             BalloonPowerup();
             TankPowerup();
             PlanePowerup();
+            PlayerEnergyMeter();
             Vector3 targetPosition = new Vector3(transform.position.x, transform.position.y, lanes[laneNumber].transform.position.z);
             transform.position = Vector3.Lerp(transform.position, targetPosition, changeLaneSpeed);         //smooth transition from original position to target lane
         }
 
 
-        if (Input.GetKeyDown(KeyCode.R))
+        //Jump when player presses space bar, long jump if player holds space bar
+        if ((Input.GetKeyDown(KeyCode.Space) || Input.GetKeyDown(KeyCode.W) || Input.GetKeyDown(KeyCode.UpArrow)) && isOnGround && gameManagerScript.gameOver == false && gameManagerScript.insideTown != true)
         {
-            gameManagerScript.RestartGame();
-            playerRb.useGravity = true;
-            planePowerupTimeLeft = 0;
-            tankPowerup = false;
-            planePowerup = false;
-            powerupSmoke.Play();
-            miniTank.SetActive(false);
-            plane.SetActive(false);
-            playerMesh.SetActive(true);
-            mainCameraScript.elevation = false;
-            gameManagerScript.musicSource.Play();
+            audioSource.PlayOneShot(jumpSound, 1.0f);
+            playerRb.AddForce(Vector3.up * jumpForce, ForceMode.Impulse);
+            //playerAnim.SetBool("Crouch_b", false);
+            isCrouching = false;
+            isJumping = true;
+            jumpTimeCounter = jumpTime;
+
 
         }
+
+
+        if (Input.GetKey(KeyCode.Space) && balloonPowerup)
+        {
+            if (jumpTimeCounter > 0 && isJumping == true)
+            {
+                playerRb.AddForce(Vector3.up * longJumpForce, ForceMode.Impulse);
+
+                playerAnim.SetBool("Jump_b", true);
+
+                jumpTimeCounter -= Time.deltaTime;
+
+            }
+            else
+            {
+                isJumping = false;
+
+            }
+        }
+
+
+
+        /*if (Input.GetKeyDown(KeyCode.R))
+        {
+            gameManagerScript.RestartGame();
+            
+
+        }*/
     }
 
 
@@ -203,7 +245,14 @@ public class PlayerController : MonoBehaviour
         }
     }*/
 
-
+    private void PlayerEnergyMeter()
+    {
+        if (energyEnduranceDuration > 0 && gameManagerScript.gameOver == false && !planePowerup && !tankPowerup) //The meter for the player endurance duration decreases
+        {
+            energyEnduranceDuration -= Time.deltaTime;
+            powerupMeterScript.UpdateEnergyMeter(energyEnduranceDuration); //The amount of time left for the baloon power up is displayed in the UI meter
+        }
+    }
 
     //Powerup Functions
     private void BalloonPowerup()
@@ -219,19 +268,22 @@ public class PlayerController : MonoBehaviour
     private void PlanePowerup()
     {
 
-        if (Input.GetKeyDown(KeyCode.O))
-        {
-            planePowerup = true;
+        // Manual Powerup test
+         /*if (Input.GetKeyDown(KeyCode.O))
+         {
+             planePowerup = true;
+            speedBeforePowerup = speed;
+
             speed = 120;
-            audioSource.clip = planeSound;
-            audioSource.loop = true;
-            audioSource.Play();
-            plane.SetActive(true);               
-            playerMesh.SetActive(false);       
-            playerRb.useGravity = false;
-            powerupMeterScript.SetPlanePowerMeterMax(planePowerupTime);
-            planePowerupTimeLeft = planePowerupTime;
-        }
+             audioSource.clip = planeSound;
+             audioSource.loop = true;
+             audioSource.Play();
+             plane.SetActive(true);               
+             playerMesh.SetActive(false);       
+             playerRb.useGravity = false;
+             powerupMeterScript.SetPlanePowerMeterMax(planePowerupTime);
+             planePowerupTimeLeft = planePowerupTime;
+         }*/
 
         if (planePowerup && planePowerupTimeLeft > 0)
         {
@@ -269,7 +321,9 @@ public class PlayerController : MonoBehaviour
 
     private void TankPowerup() 
     {
-        if (Input.GetKeyDown(KeyCode.T))
+        
+        // Manual Powerup test
+        /*if (Input.GetKeyDown(KeyCode.T))
         {
             powerupSmoke.Play();
             tankPowerup = true;
@@ -281,12 +335,12 @@ public class PlayerController : MonoBehaviour
             miniTank.SetActive(true);
             powerupMeterScript.SetTankMeterMax(tankPowerUpTime);
             tankPowerupDuration = tankPowerUpTime;
-        }
+        }*/
 
         if (tankPowerup && tankPowerupDuration > 0) //The meter for the tank powerup duration decreases
         {
             miniTank.transform.position = Vector3.Lerp(transform.position, new Vector3(transform.position.x, transform.position.y, lanes[laneNumber].transform.position.z), changeLaneSpeed);
-            playerCollider.size = new Vector3(2, 3, 6.8f);
+            //playerCollider.size = new Vector3(2, 3, 6.8f);
             tankPowerUpMeterUI.SetActive(true);
             tankPowerupDuration -= Time.deltaTime;
             powerupMeterScript.UpdateTankPowerMeter(tankPowerupDuration); //The amount of time left for the baloon power up is displayed in the UI coin meter
@@ -379,7 +433,9 @@ public class PlayerController : MonoBehaviour
             playerAnim.SetBool("Jump_b", false);
         }
 
-        //Jump when player presses space bar, long jump if player holds space bar
+
+        #region Now placed jump in fixed update
+        /*//Jump when player presses space bar, long jump if player holds space bar
         if ((Input.GetKeyDown(KeyCode.Space) || Input.GetKeyDown(KeyCode.W) || Input.GetKeyDown(KeyCode.UpArrow)) && isOnGround && gameManagerScript.gameOver == false && gameManagerScript.insideTown != true)
         {
             audioSource.PlayOneShot(jumpSound, 1.0f);
@@ -409,8 +465,10 @@ public class PlayerController : MonoBehaviour
                 isJumping = false;
 
             }
-        }
-        
+        }*/
+
+        #endregion
+
         //Player Slide
         if ((Input.GetKeyDown(KeyCode.DownArrow) || Input.GetKeyDown(KeyCode.S)) && gameManagerScript.gameOver == false && gameManagerScript.insideTown != true) //prevents player from accidently falling back down to ground
         {
@@ -446,9 +504,10 @@ public class PlayerController : MonoBehaviour
 
     }
 
-    private void GameOver()
+    public void GameOver()
     {
         gameManagerScript.gameOver = true;
+        //powerupMeterScript.UpdateBalloonPowerMeter(0);
         deathSmoke.Play();
         audioSource.Stop();
         audioSource.PlayOneShot(deathSound, 1.0f);
@@ -464,6 +523,8 @@ public class PlayerController : MonoBehaviour
             gameManagerScript.achievedHighScore = true;
         }
 
+
+        gameManagerScript.titleScreenScript.shopUIScript.AddProgressToSoundTrack(gameManagerScript.score);
 
 
     }
@@ -523,12 +584,16 @@ public class PlayerController : MonoBehaviour
             Destroy(other.gameObject);
             gameManagerScript.UpdateDrinkCount(1);
             playerScript.currentTotalSodaCount++;
+            energyEnduranceDuration += energyRefillAmount + (playerScript.enduranceUpgradeLevel * 1.5f);
+            energyEnduranceDuration = Mathf.Clamp(energyEnduranceDuration, 0, energyEnduranceTime + (playerScript.enduranceUpgradeLevel * 2.5f)); // Max soda time left is dependent on the players endurance level
 
 
         }
         if (other.gameObject.CompareTag("Money"))
         {
             yellowFireWork.Play();
+            audioSource.PlayOneShot(coinSFX, 0.5f);
+
             Destroy(other.gameObject);
             gameManagerScript.UpdateCashCount(1);
             playerScript.currentTotalCoinCount++;
@@ -539,25 +604,49 @@ public class PlayerController : MonoBehaviour
         if (other.gameObject.CompareTag("BalloonPowerup"))
         {
             balloonPowerup = true;
-            powerupMeterScript.SetBalloonMeterMax(balloonPowerupDuration);
-            balloonPowerupDuration = balloonPowerUpTime;
+            powerupMeterScript.SetBalloonMeterMax(balloonPowerUpTime + (playerScript.balloonUpgradeLevel * 1.5f));
+            balloonPowerupDuration = balloonPowerUpTime + (playerScript.balloonUpgradeLevel * 1.5f);
             yellowFireWork.Play();
+            balloonEasterEggCollider.SetActive(false);
             Destroy(other.gameObject);
 
 
         }
 
-        /*if (other.gameObject.CompareTag("TankPowerup"))
+        if (other.gameObject.CompareTag("TankPowerup"))
         {
-            balloonPowerup = true;
-            powerupMeterScript.SetMeterMax(balloonPowerupDuration);
-            balloonPowerupDuration = balloonPowerUpTime;
-            //StartCoroutine("BalloonPowerup");
-            yellowFireWork.Play();
+            powerupSmoke.Play();
+            tankPowerup = true;
+            playerMesh.SetActive(false);
+            /*playerRb.constraints = RigidbodyConstraints.None;  //Unfreeze constraint
+            playerRb.constraints = RigidbodyConstraints.FreezeRotationY;
+            playerRb.constraints = RigidbodyConstraints.FreezeRotationZ;*/
+
+            miniTank.SetActive(true);
+            powerupMeterScript.SetTankMeterMax(tankPowerUpTime + (playerScript.tankUpgradeLevel * 1.0f));
+            tankPowerupDuration = tankPowerUpTime + (playerScript.tankUpgradeLevel * 1.0f);
             Destroy(other.gameObject);
 
 
-        }*/
+        }
+
+        if (other.gameObject.CompareTag("PlanePowerup"))
+        {
+            planePowerup = true;
+
+            speedBeforePowerup = speed;
+            speed = 120;
+            audioSource.clip = planeSound;
+            audioSource.loop = true;
+            audioSource.Play();
+            plane.SetActive(true);
+            playerMesh.SetActive(false);
+            playerRb.useGravity = false;
+            powerupMeterScript.SetPlanePowerMeterMax(planePowerupTime + (playerScript.planeUpgradeLevel * 0.5f));
+            planePowerupTimeLeft = planePowerupTime + (playerScript.planeUpgradeLevel * 0.5f);
+
+
+        }
 
 
 
@@ -571,11 +660,36 @@ public class PlayerController : MonoBehaviour
 
     public void EnableRunningState()
     {
+
+        
+
         playerRb.isKinematic = false;
         speed = startSpeed;
+        StartCoroutine(IncreaseSpeedOvertime());
+        powerupMeterScript.SetEnergyMeterMax(energyEnduranceTime + (playerScript.enduranceUpgradeLevel * 2.5f)); // Max run time is 30 seconds 
+        energyEnduranceDuration = energyEnduranceTime + (playerScript.enduranceUpgradeLevel * 2.5f);
         playerRb.collisionDetectionMode = CollisionDetectionMode.ContinuousDynamic;
         gameObject.GetComponent<CharacterController>().enabled = !enabled;
         gameObject.GetComponent<ThirdPersonMovement>().enabled = !enabled;
+    }
+
+    IEnumerator IncreaseSpeedOvertime()
+    {
+        while(gameManagerScript.gameOver != true)
+        {
+
+            yield return new WaitForSeconds(3.0f);
+            if(planePowerup == false)
+            {
+                speed += 1;
+                speed = Mathf.Clamp(speed, 20, 75); // slowest speed is 20, fastest is 55
+                foreach (GameObject characterSelectUI in UIElementsToDisable)
+                {
+                    characterSelectUI.SetActive(false);
+                }
+            }
+        }
+
     }
 
 

@@ -7,7 +7,8 @@ public class CoinMeter : MonoBehaviour
 {
     public Slider slider;
     public int maxCount;
-    //public int currentCoinCount;
+    public int coinBonusAmount = 250;
+    public int currentCoinSliderCount; // Used so that the coin meter can be reset after reaching max
     public GameManager gameManagerScript;
 
 
@@ -28,7 +29,20 @@ public class CoinMeter : MonoBehaviour
     {
 
         gameManagerScript.totalCurrentCash += coin;
-        slider.value = gameManagerScript.totalCurrentCash;
+        currentCoinSliderCount += coin;
+        slider.value = currentCoinSliderCount;
+
+        if(slider.value == maxCount)
+        {
+            gameManagerScript.totalCurrentCash += coinBonusAmount;
+
+
+            gameManagerScript.playerControllerScript.playerScript.currentTotalCoinCount += coinBonusAmount;
+            gameManagerScript.playerControllerScript.playerScript.networth += coinBonusAmount;
+            currentCoinSliderCount = 0;
+            slider.value = currentCoinSliderCount;
+        }
+
     }
 
 

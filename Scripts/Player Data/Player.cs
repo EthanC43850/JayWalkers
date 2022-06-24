@@ -20,16 +20,18 @@ public class Player : MonoBehaviour
     public int currentTotalSodaCount;
     public int currentTotalPlaneCount;    //Capable of buying sodas or planes before a run
     public int currentTotalTankCount;
-    
 
-    
+    public bool planeUnlocked_b = false;
+
+
 
     //Powerup upgrades
     public int planeUpgradeLevel;
     public int tankUpgradeLevel;
     public int balloonUpgradeLevel;
 
-    public int enduranceUpgradeLevel;
+
+    public int enduranceUpgradeLevel = 1; // SET VALUES TO 1
 
 
     public GameManager gameManagerScript;
@@ -74,6 +76,7 @@ public class Player : MonoBehaviour
         networth = data.networth;
         jailTime = data.jailTime;
         highScore = data.highScore;
+        planeUnlocked_b = data.planeUnlocked_b;
 
         currentTotalCoinCount = data.currentTotalCoinCount;
         balloonUpgradeLevel = data.balloonUpgradeLevel;

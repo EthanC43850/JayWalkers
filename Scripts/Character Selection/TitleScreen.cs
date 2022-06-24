@@ -18,8 +18,8 @@ public class TitleScreen : MonoBehaviour
     public DialogueManager dialogueManagerScript;
     [HideInInspector]
     public CinemachineFreeLook thirdPersonCameraScript;
-
-    public ShopUI shopUIScript;
+    public GameObject thirdPersonCameraGameObject;
+     public ShopUI shopUIScript;
 
     public Highlight highLightScript;
 
@@ -92,8 +92,8 @@ public class TitleScreen : MonoBehaviour
 
     public List<GameObject> characterList;
 
-    public GameObject skipCutsceneBtn;
-    [SerializeField] GameObject hintsPanel;
+    //public GameObject skipCutsceneBtn;
+    public GameObject hintsPanel;
 
     //public Button loadBtn;
     public Button saveBtn;
@@ -122,43 +122,40 @@ public class TitleScreen : MonoBehaviour
     void Update()
     {
 
-        OpenSettings();
-
-        //If beginDialgue (The gameobject acting as my trigger in the timelines) activates, start dialogue
-        if (beginDialogue.activeSelf && timeLeft <= 0.0f)
-        {
-            if (count < 4)
+            //If beginDialgue (The gameobject acting as my trigger in the timelines) activates, start dialogue
+            if (beginDialogue.activeSelf && timeLeft <= 0.0f)
             {
-                dialogueTriggerScript.TriggerSpecificDialogue(dialogueTriggers[count].dialogue);
+                if (count < 4)
+                {
+                    dialogueTriggerScript.TriggerSpecificDialogue(dialogueTriggers[count].dialogue);
+                }
+                count++;
+
+                //Prevents the dialogueTrigger function to be called through multiple frames from timeline. 
+                //How this works is that the 'beginDialogue' gameobject is activated for only a frame at the start of the next playable director.
+                timeLeft = 0.5f;
             }
-            count++;
-
-            //Prevents the dialogueTrigger function to be called through multiple frames from timeline. 
-            //How this works is that the 'beginDialogue' gameobject is activated for only a frame at the start of the next playable director.
-            timeLeft = 0.5f;
-        }
-        if(timeLeft > 0.0f)
-        {
-            timeLeft -= Time.deltaTime;
-        }
-
-
-        //Start Character Selection
-        //CREATE A PANEL THAT GIVES THE PLAYER THE DIRECTIONS TO "Hover your mouse over a character to select one"
-        if(count == 5)
-        {
-
-            skipCutsceneBtn.SetActive(false);
-            for (int i = 1; i < 5; i++)
+            if (timeLeft > 0.0f)
             {
-                timeLineControllerScript.playableDirectors[i].gameObject.SetActive(false);  //disable all time lines completely to prevent future camera interference 
-            }                                                                               //(This only happened because scene count went up after titlescreen cutscene was skipped)
-            characterSelectUIAnimator.SetBool("Is_Open", true);
-            characterSelectActive = true;
-            count++;
-        }
+                timeLeft -= Time.deltaTime;
+            }
 
 
+            //Start Character Selection
+            //CREATE A PANEL THAT GIVES THE PLAYER THE DIRECTIONS TO "Hover your mouse over a character to select one"
+            if (count == 5)
+            {
+
+                //skipCutsceneBtn.SetActive(false);
+                for (int i = 1; i < 5; i++)
+                {
+                    timeLineControllerScript.playableDirectors[i].gameObject.SetActive(false);  //disable all time lines completely to prevent future camera interference 
+                }                                                                               //(This only happened because scene count went up after titlescreen cutscene was skipped)
+                characterSelectUIAnimator.SetBool("Is_Open", true);
+                characterSelectActive = true;
+                count++;
+            }
+       
     }
 
     public void StartGame()
@@ -167,7 +164,7 @@ public class TitleScreen : MonoBehaviour
         timeLineControllerScript.PlayFromDirectors(0);
         dialogueManagerScript.IncrementSceneNumber();
 
-        skipCutsceneBtn.SetActive(true);
+        //skipCutsceneBtn.SetActive(true);
         gameManagerScript.titleScreen = false;
         gameManagerScript.titleScreenUI.SetActive(false);
         titleScreenPlayableDirector.Stop();
@@ -203,7 +200,7 @@ public class TitleScreen : MonoBehaviour
     //Give control to the character that the player selected
     public void ConfirmCharacterSelection()
     {
-
+        gameManagerScript.isMenuOpen = false;
         characterSelectActive = false;
         characterNumber = currentCharacterNumber;
 
@@ -295,10 +292,11 @@ public class TitleScreen : MonoBehaviour
 
     }
 
-    public void OpenSettings()
+    /*public void OpenSettings()
     {
-        if (Input.GetKeyDown(KeyCode.Escape))
+        if (Input.GetKeyDown(KeyCode.B))
         {
+            gameManagerScript.save_text.text = "Save Game";
             if (settingsMenu.activeInHierarchy)
             {
                 //Disable Normal Player Controls
@@ -315,7 +313,7 @@ public class TitleScreen : MonoBehaviour
 
         }
 
-    }
+    }*/
 
     public void TitleScreenLoadData()
     {
@@ -354,6 +352,7 @@ public class TitleScreen : MonoBehaviour
         thirdPersonCameraScript.LookAt = characterList[characterNumber].transform;
         thirdPersonCameraScript.Priority = 20;
 
+
         //Activate open-world UI
         gameManagerScript.playerInfoUI.SetActive(true);
         gameManagerScript.playerInfoUI.GetComponent<Animator>().SetBool("Open_b", true);
@@ -369,9 +368,9 @@ public class TitleScreen : MonoBehaviour
 
         //Update the shop UI after loading player because I can't move shopUIScript into the player load script (Unless I pass a parameter)
         shopUIScript.playerScript = playerScript;
-        Balloon balloonPowerup = new Balloon(data.balloonUpgradeLevel, 1000 * data.balloonUpgradeLevel, shopUIScript.balloonSlider, shopUIScript.balloonLevelTxt, shopUIScript.balloonCostTxt);
-        Tank tankPowerup = new Tank(data.tankUpgradeLevel, 1250 * data.tankUpgradeLevel, shopUIScript.tankSlider, shopUIScript.tankLevelTxt, shopUIScript.tankCostTxt);
-        Plane planePowerup = new Plane(data.planeUpgradeLevel, 1500 * data.tankUpgradeLevel, shopUIScript.planeSlider, shopUIScript.planeLevelText, shopUIScript.planeCostTxt);
+        Balloon balloonPowerup = new Balloon(data.balloonUpgradeLevel, shopUIScript.upgradeCost * data.balloonUpgradeLevel, shopUIScript.balloonSlider, shopUIScript.balloonLevelTxt, shopUIScript.balloonCostTxt);
+        Tank tankPowerup = new Tank(data.tankUpgradeLevel, shopUIScript.upgradeCost * data.tankUpgradeLevel, shopUIScript.tankSlider, shopUIScript.tankLevelTxt, shopUIScript.tankCostTxt);
+        Plane planePowerup = new Plane(data.planeUpgradeLevel, shopUIScript.upgradeCost * data.tankUpgradeLevel, shopUIScript.planeSlider, shopUIScript.planeLevelText, shopUIScript.planeCostTxt);
 
         if (data.balloonUpgradeLevel == 10)
         {
@@ -411,6 +410,9 @@ public class TitleScreen : MonoBehaviour
 
         gameManagerScript.UpdatePlayerUI(playerScript);
 
+        gameManagerScript.isMenuOpen = false;
+
+        thirdPersonCameraGameObject.SetActive(true);
 
     }
 

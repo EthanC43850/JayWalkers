@@ -31,6 +31,9 @@ public class PlayerData
     public int balloonUpgradeLevel;
     public int enduranceUpgradeLevel;
 
+    // Unlocks
+    public bool planeUnlocked_b;
+
 
     //Take data from player script and store inside these variables
     public PlayerData(Player player)
@@ -49,9 +52,9 @@ public class PlayerData
         tankUpgradeLevel = player.tankUpgradeLevel;
         planeUpgradeLevel = player.planeUpgradeLevel;
         enduranceUpgradeLevel = player.enduranceUpgradeLevel;
+        planeUnlocked_b = player.planeUnlocked_b;
 
 
-        
 
         position = new float[3];
         position[0] = player.transform.position.x;
